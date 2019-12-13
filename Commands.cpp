@@ -1,10 +1,14 @@
 //
 // Created by eliadsellem on 12/11/19.
 //
+
+
+#include <regex>
 #include "Commands.h"
 
 int openDataCommand::execute(vector<string> &array, int index, unordered_map<string, Obj *> &STSimulatorMap,
-                             unordered_map<string, Obj *> &STObjMap) {
+                             unordered_map<string, Obj *> &STObjMap,
+                             unordered_map<string, Command*> &commandMap) {
   string portS = array[index + 1];
   //check if the its a number****
   int port = stoi(portS);
@@ -42,7 +46,7 @@ int openDataCommand::execute(vector<string> &array, int index, unordered_map<str
 
   //and after we got the first message from the simulator we can continue compile the rest,
   // and simultaneously continuing receive massage from the simulator.
-  thread threadServer([this, client_socket]() {
+  thread threadServer([client_socket]() {
     while (true) {
       char buffer[1024] = {0};
       int valRead = read(client_socket, buffer, 1024);
@@ -58,56 +62,61 @@ int openDataCommand::execute(vector<string> &array, int index, unordered_map<str
 int varCommand::execute(vector<string> &array,
                         int index,
                         unordered_map<string, Obj *> &STSimulatorMap,
-                        unordered_map<string, Obj *> &STObjMap) {
+                        unordered_map<string, Obj *> &STObjMap,
+                        unordered_map<string, Command*> &commandMap) {
 
-  string valName = array[index + 1];
-  string sign = array[index +2];
-  //assign a new var.
-  if(sign.compare("=") == 0) {
-
-  }
-}
-
-int printCommand::execute(vector<string> &array,
-                          int index,
-                          unordered_map<string, Obj *> &STSimulatorMap,
-                          unordered_map<string, Obj *> &STObjMap) {
-  string toPrint = array[index + 1];
-  printf(toPrint);
-  return 2;
-}
-
-int sleepCommand::execute(vector<string> &array,
-                          int index,
-                          unordered_map<string, Obj *> &STSimulatorMap,
-                          unordered_map<string, Obj *> &STObjMap) {
-  unsigned int sleepFor = strtoul(array[index + 1]);
-  sleep(sleepFor);
-  return 2;
 }
 
 int openControlCommand:: execute(vector<string> &array,
                                  int index,
                                  unordered_map<string, Obj *> &STSimulatorMap,
-                                 unordered_map<string, Obj *> &STObjMap) {
-    int socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (socket == -1) {
+                                 unordered_map<string, Obj *> &STObjMap,
+                                 unordered_map<string, Command*> &commandMap) {
+    int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (clientSocket == -1) {
         // error
         std::cerr<<"could not create a socket"<<endl;
         return -1;
     }
-    string ip = stoi(array[index + 1]);
-    string port = stoi(array[index + 2]);
+    string i = array[index + 1];
+    char* ip;
+    strcpy(ip, i.c_str());
+    int port = stoi(array[index + 2]);
     sockaddr_in adress;
-    adress.sin_family =
-    adress.sin_addr.s_addr =
-    adress.sin_port =
+    adress.sin_family = AF_INET;
+    adress.sin_addr.s_addr = inet_addr("127.0.0.1");
+    adress.sin_port = htons(port);
+    int isConnect = connect(clientSocket,(struct sockaddr *)&adress, sizeof(adress));
+    if (isConnect == -1) {
+        //
+        return -2;
+    } else {
+        //
+    }
+    thread threadClient([clientSocket, STObjMap]() {
+        auto t = STObjMap.begin();
+        for ( auto it = STObjMap.begin(); it != STObjMap.end(); ++it ) {
+            Obj* obj = it->second;
+            string sim = obj->getSim();
+            float val = obj->getValue();
+            string massage = "set " + sim + " " + to_string(val) + "\r\n";
+            char* m;
+            strcpy(m, massage.c_str());
+            int is_send = send(clientSocket, m, strlen(m), 0);
+            if (is_send == -1) {
 
 
+            } else {
 
+            }
+        }
+    });
+    return 3;
 }
+
+
 int ifCommand:: execute(vector<string> &array, int index,unordered_map<string, Obj *> &STSimulatorMap,
-                        unordered_map<string, Obj *> &STObjMap,
+           unordered_map<string, Obj *> &STObjMap,
                         unordered_map<string, Command*> &commandMap) {
     bool flag = false;
     int counter = 1;
@@ -168,7 +177,7 @@ int ifCommand:: execute(vector<string> &array, int index,unordered_map<string, O
         while (array[index + counter] != "}") {
             Command* c = commandMap.find(array[index + counter])->second;
             counter += c->execute(array, index, STSimulatorMap,
-                                  STObjMap, commandMap);
+                    STObjMap, commandMap);
         }
     }
     return counter;
