@@ -6,7 +6,7 @@
 //    iF.parser();
 //    return 0;
 //}
-#include "Commands.h"
+#include "Commands.cpp"
 #include <iostream>
 #include <vector>
 #include <fstream>
