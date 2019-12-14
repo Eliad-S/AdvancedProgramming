@@ -22,7 +22,7 @@ string removeSpace(string str) {
 string removeQuotatin(string str) {
     string dest = "";
     for (int i = 0; i < str.length(); ++i)
-        if (str[i] != '"' && str[i] != ')' ) {
+        if (str[i] != '"' && str[i] != ')' && str[i] != '(') {
             dest += str[i];
         }
     return dest;
@@ -62,6 +62,14 @@ void splitConnectControlClient(string s, vector<string> *tokens) {
     tokens->push_back(withoutQuotatin.substr(indexComma + 1,
             withoutQuotatin.length() - 1));
 }
+void splitPrint(string s, vector<string> *tokens) {
+    tokens->push_back("Print");
+    tokens->push_back(s.substr(2, s.length() - 3));
+}
+void splitSleep(string s, vector<string> *tokens) {
+    tokens->push_back("Sleep");
+    tokens->push_back(removeQuotatin(s));
+}
 int main(int argc, char* argv[]) {
     ifstream in("file.txt");
     string str;
@@ -94,6 +102,26 @@ int main(int argc, char* argv[]) {
                 splitConnectControlClient(withoutSpaces, &tokens);
                 substr = "";
                 break;
+            }
+            if (substr == "Sleep") {
+                string withoutSpaces =
+                        removeSpace((*i).substr(5, (*i).length() - 1));
+                splitSleep(withoutSpaces, &tokens);
+                substr = "";
+                break;
+            }
+            if (substr == "Print") {
+                string withoutSpaces =
+                        removeSpace((*i).substr(5, (*i).length() - 1));
+                splitPrint(withoutSpaces, &tokens);
+                substr = "";
+                break;
+            }
+            if (substr == "while" || substr == "if") {
+
+            }
+            if (substr == " ") {
+                substr = "";
             }
             substr += (*i)[j];
         }

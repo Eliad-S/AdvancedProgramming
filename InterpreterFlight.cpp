@@ -11,7 +11,7 @@ void InterpreterFlight::parser() {
     unordered_map<string, Command *>::iterator itCommand = commandMap.find(*itLexer);
     if (itCommand != commandMap.end()) {
       Command *c = commandMap.find(*itLexer)->second;
-      c->execute(array, index, STSimulatorMap, STObjMap);
+      c->execute(array, index, STSimulatorMap, STObjMap, commandMap);
     }
   }
 };

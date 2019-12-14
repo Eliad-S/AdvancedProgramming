@@ -10,6 +10,7 @@ void Obj::setValue(int val) {
   this->value = val;
 }
 
+
 Obj &Obj::operator++() {
   ++this->value;
   return *this;

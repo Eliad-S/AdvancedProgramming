@@ -5,30 +5,10 @@
 
 #include <regex>
 #include "Commands.h"
-#include "ex1.h"
-
-float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const string &e) {
-  Interpreter *interpreter = new Interpreter(STObjMap);
-  Expression *expression = nullptr;
-  float result = 0;
-// expression
-  try {
-    expression = interpreter->interpret(e);
-    result = expression->calculate();
-    delete expression;
-    delete interpreter;
-  } catch (const char *e) {
-    if (expression != nullptr) {
-      delete expression;
-      delete interpreter;
-    }
-  }
-  return result;
-}
 
 int openDataCommand::execute(vector<string> &array, int index, unordered_map<string, Obj *> &STSimulatorMap,
                              unordered_map<string, Obj *> &STObjMap,
-                             unordered_map<string, Command *> &commandMap) {
+                             unordered_map<string, Command*> &commandMap) {
   string portS = array[index + 1];
   //check if the its a number****
   int port = stoi(portS);
@@ -83,121 +63,122 @@ int varCommand::execute(vector<string> &array,
                         int index,
                         unordered_map<string, Obj *> &STSimulatorMap,
                         unordered_map<string, Obj *> &STObjMap,
-                        unordered_map<string, Command *> &commandMap) {
+                        unordered_map<string, Command*> &commandMap) {
 
 }
 
-int openControlCommand::execute(vector<string> &array,
-                                int index,
-                                unordered_map<string, Obj *> &STSimulatorMap,
-                                unordered_map<string, Obj *> &STObjMap,
-                                unordered_map<string, Command *> &commandMap) {
-  int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
-  if (clientSocket == -1) {
-    // error
-    std::cerr << "could not create a socket" << endl;
-    return -1;
-  }
-  string i = array[index + 1];
-  char *ip;
-  strcpy(ip, i.c_str());
-  int port = stoi(array[index + 2]);
-  sockaddr_in address;
-  address.sin_family = AF_INET;
-  address.sin_addr.s_addr = inet_addr("127.0.0.1");
-  address.sin_port = htons(port);
-  int isConnect = connect(clientSocket, (struct sockaddr *) &address, sizeof(address));
-  if (isConnect == -1) {
-    //
-    return -2;
-  } else {
-    //
-  }
-  thread threadClient([clientSocket, STObjMap]() {
-    auto t = STObjMap.begin();
-    for (auto it = STObjMap.begin(); it != STObjMap.end(); ++it) {
-      Obj *obj = it->second;
-      string sim = obj->getSim();
-      float val = obj->getValue();
-      string massage = "set " + sim + " " + to_string(val) + "\r\n";
-      char *m;
-      strcpy(m, massage.c_str());
-      int is_send = send(clientSocket, m, strlen(m), 0);
-      if (is_send == -1) {
-
-      } else {
-
-      }
+int openControlCommand:: execute(vector<string> &array,
+                                 int index,
+                                 unordered_map<string, Obj *> &STSimulatorMap,
+                                 unordered_map<string, Obj *> &STObjMap,
+                                 unordered_map<string, Command*> &commandMap) {
+    int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (clientSocket == -1) {
+        // error
+        std::cerr<<"could not create a socket"<<endl;
+        return -1;
     }
-  });
-  return 3;
-}
-
-int ifCommand::execute(vector<string> &array, int index, unordered_map<string, Obj *> &STSimulatorMap,
-                       unordered_map<string, Obj *> &STObjMap,
-                       unordered_map<string, Command *> &commandMap) {
-  bool flag = false;
-  int counter = 1;
-  string s1 = array[index + 1];
-  string s2 = array[index + 2];
-  if (s2 == "{") {
-    counter = 3;
-    //find if s1 is true value.
-    auto it = STObjMap.find(s1);
-    // variable
-    if (STObjMap.find(s1) != STObjMap.end()) {
-      float val = it->second->getValue();
-      if (val > 0) {
-        flag = true;
-      }
+    string i = array[index + 1];
+    char* ip;
+    strcpy(ip, i.c_str());
+    int port = stoi(array[index + 2]);
+    sockaddr_in adress;
+    adress.sin_family = AF_INET;
+    adress.sin_addr.s_addr = inet_addr("127.0.0.1");
+    adress.sin_port = htons(port);
+    int isConnect = connect(clientSocket,(struct sockaddr *)&adress, sizeof(adress));
+    if (isConnect == -1) {
+        //
+        return -2;
     } else {
-      // number
-      regex isFloat("[-]?([0-9]*[.])?[0-9]+");
-      if (regex_match(s1, isFloat)) {
-        if (stof(s1)) {
-          flag = true;
+        //
+    }
+    thread threadClient([clientSocket, STObjMap]() {
+        auto t = STObjMap.begin();
+        for ( auto it = STObjMap.begin(); it != STObjMap.end(); ++it ) {
+            Obj* obj = it->second;
+            string sim = obj->getSim();
+            float val = obj->getValue();
+            string massage = "set " + sim + " " + to_string(val) + "\r\n";
+            char* m;
+            strcpy(m, massage.c_str());
+            int is_send = send(clientSocket, m, strlen(m), 0);
+            if (is_send == -1) {
+
+
+            } else {
+
+            }
         }
-      } else {
-        if(calculateExpression(STObjMap,s1) > 0)
-          flag = true;
-      }
+    });
+    return 3;
+}
+
+
+int ifCommand:: execute(vector<string> &array, int index,unordered_map<string, Obj *> &STSimulatorMap,
+           unordered_map<string, Obj *> &STObjMap,
+                        unordered_map<string, Command*> &commandMap) {
+    bool flag = false;
+    int counter = 1;
+    string s1 = array[index + 1];
+    string s2 = array[index + 2];
+    if (s2 == "{") {
+        counter = 3;
+        //find if s1 is true value.
+        auto it  = STObjMap.find(s1);
+        // variable
+        if (STObjMap.find(s1) != STObjMap.end()) {
+            float val = it->second->getValue();
+            if (val > 0) {
+                flag = true;
+            }
+        } else {
+            // number
+            regex isFloat("[-]?([0-9]*[.])?[0-9]+");
+            if (regex_match(s1, isFloat)) {
+                if (stof(s1)) {
+                    flag = true;
+                }
+            } else {
+                // expression
+            }
+        }
+    } else {
+        counter = 5;
+        string s3 = array[index + 3];
+        // expression
+        float f1 = stof(s1);
+        float f3 = stof(s3);
+        if (s2 == "!=") {
+            flag = (f1 != f3);
+        }
+        if (s2 == "==") {
+            flag = (f1 == f3);
+        }
+        if (s2 == ">=") {
+            flag = (f1 >= f3);
+        }
+        if (s2 == "<=") {
+            flag = (f1 <= f3);
+        }
+        if (s2 == ">") {
+            flag = (f1 > f3);
+        }
+        if (s2 == "<") {
+            flag = (f1 < f3);
+        }
     }
-  } else {
-    counter = 5;
-    string s3 = array[index + 3];
-    // expression
-    float f1 = calculateExpression(STObjMap,s1);
-    float f3 = calculateExpression(STObjMap,s3);
-    if (s2 == "!=") {
-      flag = (f1 != f3);
-    }
-    if (s2 == "==") {
-      flag = (f1 == f3);
-    }
-    if (s2 == ">=") {
-      flag = (f1 >= f3);
-    }
-    if (s2 == "<=") {
-      flag = (f1 <= f3);
-    }
-    if (s2 == ">") {
-      flag = (f1 > f3);
-    }
-    if (s2 == "<") {
-      flag = (f1 < f3);
-    }
-  }
-  if (!flag) {
-    while (array[index + counter] != "}") {
-      counter++;
+    if (!flag) {
+        while (array[index + counter] != "}") {
+            counter++;
+        }
+        return counter;
+    } else {
+        while (array[index + counter] != "}") {
+            Command* c = commandMap.find(array[index + counter])->second;
+            counter += c->execute(array, index, STSimulatorMap,
+                    STObjMap, commandMap);
+        }
     }
     return counter;
-  } else {
-    while (array[index + counter] != "}") {
-      Command *c = commandMap.find(array[index + counter])->second;
-      counter += c->execute(array, index, STSimulatorMap,
-                            STObjMap, commandMap);
-    }
-  }
-  return counter;
 }
