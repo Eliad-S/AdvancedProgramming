@@ -3,4 +3,4 @@ project(AdvancedProgramming)
 
 SET(CMAKE_CXX_FLAGS -pthread)
 
-add_executable(AdvancedProgramming main.cpp)
+add_executable(AdvancedProgramming main.cpp ex1.cpp Obj.cpp)
