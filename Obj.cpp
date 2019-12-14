@@ -10,12 +10,6 @@ void Obj::setValue(int val) {
   this->value = val;
 }
 
-string Obj:: getSim() {
-    return this->sim;
-}
-float Obj:: getValue() {
-    return this->value;
-}
 
 Obj &Obj::operator++() {
   ++this->value;
