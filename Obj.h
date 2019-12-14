@@ -26,6 +26,8 @@ class Obj : public Expression{
   }
   void setDirection(int d);
   void setValue(int val);
+  string getSim();
+  float getValue();
   //prefix
   Obj &operator++();
   Obj &operator--();

@@ -1,12 +1,13 @@
 //
 // Created by eliadsellem on 12/11/19.
 //
-
-
 #include <regex>
 #include "Commands.h"
-
-int openDataCommand::execute(vector<string> &array, int index, unordered_map<string, Obj *> &STSimulatorMap,
+#include "Obj.h"
+#include "Obj.cpp"
+int openDataCommand::execute(vector<string> &array,
+                             int index,
+                             unordered_map<string, Obj *> &STSimulatorMap,
                              unordered_map<string, Obj *> &STObjMap,
                              unordered_map<string, Command*> &commandMap) {
   string portS = array[index + 1];
@@ -115,8 +116,10 @@ int openControlCommand:: execute(vector<string> &array,
 }
 
 
-int ifCommand:: execute(vector<string> &array, int index,unordered_map<string, Obj *> &STSimulatorMap,
-           unordered_map<string, Obj *> &STObjMap,
+int ifCommand:: execute(vector<string> &array,
+                        int index,
+                        unordered_map<string, Obj *> &STSimulatorMap,
+                        unordered_map<string, Obj *> &STObjMap,
                         unordered_map<string, Command*> &commandMap) {
     bool flag = false;
     int counter = 1;

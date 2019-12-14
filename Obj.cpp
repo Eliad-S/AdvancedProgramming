@@ -8,8 +8,13 @@ void Obj::setDirection(int d) {
 }
 void Obj::setValue(int val) {
   this->value = val;
-<<<<<<< HEAD
-=======
+}
+
+string Obj:: getSim() {
+    return this->sim;
+}
+float Obj:: getValue() {
+    return this->value;
 }
 
 Obj &Obj::operator++() {
@@ -42,5 +47,4 @@ Obj &Obj::operator-=(float value) {
 
 float Obj::calculate() {
   return this->value;
->>>>>>> origin/master
 }
