@@ -38,7 +38,16 @@ class Obj : public Expression{
   Obj &operator+=(float val);
 
   float calculate() override;
+  float getValue() {
+    return this->value;
+  }
+
+  string getSim(){
+    return this->sim;
+  }
+
 
   ~Obj(){};
+
 };
 #endif //ADVANCED__OBJ_H_

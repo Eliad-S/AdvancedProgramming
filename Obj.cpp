@@ -42,5 +42,4 @@ Obj &Obj::operator-=(float value) {
 
 float Obj::calculate() {
   return this->value;
->>>>>>> origin/master
 }
