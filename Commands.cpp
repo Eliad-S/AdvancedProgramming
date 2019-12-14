@@ -5,8 +5,27 @@
 
 #include <regex>
 #include "Commands.h"
+#include "ex1.h"
 
-int openDataCommand::execute(vector<string> &array, int index, unordered_map<string, Obj *> &STSimulatorMap,
+float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const string &e) {
+  Interpreter *interpreter = new Interpreter(STObjMap);
+  Expression *expression = nullptr;
+  float result = 0;
+// expression
+  try {
+    expression = interpreter->interpret(e);
+    result = expression->calculate();
+    delete expression;
+    delete interpreter;
+  } catch (const char *e) {
+    if (expression != nullptr) {
+      delete expression;
+      delete interpreter;
+    }
+  }
+  return result;
+}
+  int openDataCommand::execute(vector<string> &array, int index, unordered_map<string, Obj *> &STSimulatorMap,
                              unordered_map<string, Obj *> &STObjMap,
                              unordered_map<string, Command*> &commandMap) {
   string portS = array[index + 1];
@@ -140,15 +159,17 @@ int ifCommand:: execute(vector<string> &array, int index,unordered_map<string, O
                     flag = true;
                 }
             } else {
-                // expression
+                if(calculateExpression(STObjMap,s1) > 0) {
+                  flag = true;
+                }
             }
         }
     } else {
         counter = 5;
         string s3 = array[index + 3];
         // expression
-        float f1 = stof(s1);
-        float f3 = stof(s3);
+        float f1 = calculateExpression(STObjMap,s1);
+        float f3 = calculateExpression(STObjMap,s3);
         if (s2 == "!=") {
             flag = (f1 != f3);
         }
