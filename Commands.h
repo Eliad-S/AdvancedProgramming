@@ -24,6 +24,8 @@ class Command {
   virtual int execute(vector<string> &array, int index, unordered_map<string, Obj *> &STSimulatorMap,
                       unordered_map<string, Obj *> &STObjMap,
                       unordered_map<string, Command*> &commandMap) = 0;
+
+  float calculateExpression(unordered_map<string, Obj *> &STObjMap,  const string& e);
   virtual ~Command() {}
 };
 

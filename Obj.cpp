@@ -8,8 +8,6 @@ void Obj::setDirection(int d) {
 }
 void Obj::setValue(int val) {
   this->value = val;
-<<<<<<< HEAD
-=======
 }
 
 Obj &Obj::operator++() {

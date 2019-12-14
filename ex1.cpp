@@ -272,64 +272,6 @@ queue<Token *> Interpreter::ShuntingYard(vector<Token *> &tokens) {
   return outputQueue;
 }
 
-void Interpreter::setVariables(string s) {
-  int flag = 0;
-  vector<string> vS = this->splitSBy(s, ";");
-  for (unsigned int i = 0; i < vS.size(); i++) {
-    string checkString = vS[i];
-    string delimiter = "=";
-    unsigned int pos = checkString.find(delimiter);
-    if (pos > checkString.length()) {
-      throw "illegal variable assignment!";
-    }
-    //separate the string to two possible parameter and value.
-    string left = checkString.substr(0, pos);
-    string right = checkString.substr(pos + 1, checkString.length() - 1);
-    regex isNum("^[-+]?[0-9]+\\.?[0-9]*$");
-    regex isVar("[a-z|A-Z|_|]+[a-z|A-Z|_|0-9]*");
-    bool isLeftNum = regex_match(left.begin(), left.end(), isNum);
-    bool isRightNum = regex_match(right.begin(), right.end(), isNum);
-    //if we have two numbers/variable so we get a bad input.
-    if (isLeftNum == isRightNum) {
-      throw "illegal variable assignment!";
-    }
-    //the right string is a number and the left one is the variable.
-    if (isRightNum) {
-      if (!regex_match(left.begin(), left.end(), isVar)) {
-        throw "illegal variable assignment!";
-      }
-      flag = 0;
-      double num;
-      istringstream(right) >> num;
-      //check if the key is already declare at the map and if it is, change it to the new value.
-      for (std::map<string, float>::iterator it = this->variable.begin(); it != this->variable.end(); it++) {
-        if (!it->first.compare(left)) {
-          it->second = num;
-          flag = 1;
-        }
-      }
-      if (flag == 0) this->variable.insert(pair<string, float>(left, num));
-    } else {
-      //the left string is a number and the right one is the variable.
-      if (isLeftNum) {
-        if (!regex_match(right.begin(), right.end(), isVar)) {
-          throw "illegal variable assignment!";
-        }
-        flag = 0;
-        double num;
-        istringstream(left) >> num;
-        //check if the key is already declare at the map and if it is, change it to the new value.
-        for (std::map<string, float>::iterator it = this->variable.begin(); it != this->variable.end(); it++) {
-          if (!it->first.compare(right)) {
-            it->second = num;
-            flag = 1;
-          }
-        }
-        if (flag == 0) this->variable.insert(pair<string, float>(right, num));
-      }
-    }
-  }
-}
 //this method split a string by the string we give it.
 vector<string> Interpreter::splitSBy(string s, string delimiter) {
   vector<string> sVec;
@@ -378,9 +320,9 @@ Expression *Interpreter::RPN(queue<Token *> &tokens) {
       //find the key's value at our map and create a variable type.
       if (tokens.front()->token_type == Token::Variable) {
         int flag = 0;
-        for (std::map<string, float>::iterator it = this->variable.begin(); it != this->variable.end(); it++) {
+        for (std::unordered_map<string, Obj*>::iterator it = this->varObjMap.begin(); it != this->varObjMap.end(); it++) {
           if (it->first.compare(tokens.front()->getParameter()) == 0) {
-            stack.push(new Obj(it->first, it->second));
+            stack.push(new Obj(it->first, it->second->getValue()));
             flag = 1;
             break;
           }

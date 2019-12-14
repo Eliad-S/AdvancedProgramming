@@ -12,7 +12,9 @@
 #include "map"
 #include <regex>
 #include <stack>
+#include <unordered_map>
 #include "queue"
+#include "Obj.h"
 
 class Value : public Expression {
   const float val;
@@ -123,10 +125,13 @@ class Token {
 };
 
 class Interpreter {
-  map<string, float> variable;
+  unordered_map<string, Obj*> varObjMap;
 
  public:
 
+  Interpreter(unordered_map<string, Obj*> &map) {
+    this->varObjMap = map;
+  }
   vector<string> separateS(string s);
 
   Expression *interpret(string s);
@@ -134,8 +139,6 @@ class Interpreter {
   queue<Token *> ShuntingYard(vector<Token *> &tokens);
 
   Expression *RPN(queue<Token *> &tokens);
-
-  void setVariables(string s);
 
   vector<string> splitSBy(string s, string delimiter);
 
