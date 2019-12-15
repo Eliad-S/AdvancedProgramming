@@ -25,7 +25,7 @@ float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const
   }
   return result;
 }
-  int openDataCommand::execute(vector<string> &array, int index, unordered_map<string, Obj *> &STSimulatorMap,
+  int openDataCommand::execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
                              unordered_map<string, Obj *> &STObjMap,
                              unordered_map<string, Command*> &commandMap) {
   string portS = array[index + 1];
@@ -80,7 +80,7 @@ float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const
 
 int varCommand::execute(vector<string> &array,
                         int index,
-                        unordered_map<string, Obj *> &STSimulatorMap,
+                        map<string, Obj *> &STSimulatorMap,
                         unordered_map<string, Obj *> &STObjMap,
                         unordered_map<string, Command*> &commandMap) {
 
@@ -88,7 +88,7 @@ int varCommand::execute(vector<string> &array,
 
 int openControlCommand:: execute(vector<string> &array,
                                  int index,
-                                 unordered_map<string, Obj *> &STSimulatorMap,
+                                 map<string, Obj *> &STSimulatorMap,
                                  unordered_map<string, Obj *> &STObjMap,
                                  unordered_map<string, Command*> &commandMap) {
     int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -134,7 +134,7 @@ int openControlCommand:: execute(vector<string> &array,
 }
 
 
-int ifCommand:: execute(vector<string> &array, int index,unordered_map<string, Obj *> &STSimulatorMap,
+int ifCommand:: execute(vector<string> &array, int index,map<string, Obj *> &STSimulatorMap,
            unordered_map<string, Obj *> &STObjMap,
                         unordered_map<string, Command*> &commandMap) {
     bool flag = false;
@@ -187,7 +187,7 @@ int ifCommand:: execute(vector<string> &array, int index,unordered_map<string, O
 
 int whileCommand:: execute(vector<string> &array,
                            int index,
-                           unordered_map<string, Obj *> &STSimulatorMap,
+                           map<string, Obj *> &STSimulatorMap,
                            unordered_map<string, Obj *> &STObjMap,
                            unordered_map<string, Command*> &commandMap) {
     bool flag = false;

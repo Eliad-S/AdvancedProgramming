@@ -27,7 +27,7 @@ void InterpreterFlight::setCommandMap(unordered_map<string, Command *> &map) {
   map["if"] = new ifCommand();
 }
 
-void InterpreterFlight::setSTSimulatorMap(map<string, Obj *> &map) {
+void InterpreterFlight::setSTSimulatorMap(map<string, Obj *> & mapa) {
   Obj *airspeed_indicator_indicated_speed_kt = new Obj("/instrumentation/airspeed-indicator/indicated-speed-kt");
   map["airspeed_indicator_indicated_speed_kt"] = airspeed_indicator_indicated_speed_kt;
   Obj *altimeter_indicated_altitude_ft = new Obj("/instrumentation/altimeter/indicated-altitude-ft");

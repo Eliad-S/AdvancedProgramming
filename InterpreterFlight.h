@@ -6,9 +6,10 @@
 #define ADVANCED__INTERPRETERFLIGHT_H_
 #include <vector>
 #include <fstream>
-#include "Commands.cpp"
-#include "Obj.cpp"
 #include <unordered_map>
+#include "Commands.h"
+#include "InterpreterFlight.h"
+#include <math.h>
 
 
 using namespace std;
@@ -21,7 +22,7 @@ class InterpreterFlight {
 
  public:
   void setCommandMap(unordered_map<string, Command*> &map);
-  void setSTSimulatorMap(map<string, Obj*> &map);
+  void setSTSimulatorMap(map<string, Obj*> & mapa);
   vector<string> lexer(ifstream &in);
 
   InterpreterFlight(ifstream &inFile) {
