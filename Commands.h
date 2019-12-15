@@ -15,6 +15,7 @@
 #include <vector>
 #include <iostream>
 #include <cstring>
+#include <map>
 
 using namespace std;
 class Command {

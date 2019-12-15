@@ -25,9 +25,9 @@ float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const
   }
   return result;
 }
-  int openDataCommand::execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
+int openDataCommand::execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
                              unordered_map<string, Obj *> &STObjMap,
-                             unordered_map<string, Command*> &commandMap) {
+                             unordered_map<string, Command *> &commandMap) {
   string portS = array[index + 1];
   //check if the its a number****
   int port = stoi(portS);
@@ -82,68 +82,66 @@ int varCommand::execute(vector<string> &array,
                         int index,
                         map<string, Obj *> &STSimulatorMap,
                         unordered_map<string, Obj *> &STObjMap,
-                        unordered_map<string, Command*> &commandMap) {
+                        unordered_map<string, Command *> &commandMap) {
 
 }
 
-int openControlCommand:: execute(vector<string> &array,
-                                 int index,
-                                 map<string, Obj *> &STSimulatorMap,
-                                 unordered_map<string, Obj *> &STObjMap,
-                                 unordered_map<string, Command*> &commandMap) {
-    int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (clientSocket == -1) {
-        // error
-        std::cerr<<"could not create a socket"<<endl;
-        return -1;
+int openControlCommand::execute(vector<string> &array,
+                                int index,
+                                map<string, Obj *> &STSimulatorMap,
+                                unordered_map<string, Obj *> &STObjMap,
+                                unordered_map<string, Command *> &commandMap) {
+  int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+  if (clientSocket == -1) {
+    // error
+    std::cerr << "could not create a socket" << endl;
+    return -1;
+  }
+  string i = array[index + 1];
+  char *ip;
+  strcpy(ip, i.c_str());
+  int port = stoi(array[index + 2]);
+  sockaddr_in adress;
+  adress.sin_family = AF_INET;
+  adress.sin_addr.s_addr = inet_addr("127.0.0.1");
+  adress.sin_port = htons(port);
+  int isConnect = connect(clientSocket, (struct sockaddr *) &adress, sizeof(adress));
+  if (isConnect == -1) {
+    //
+    return -2;
+  } else {
+    //
+  }
+  thread threadClient([clientSocket, STObjMap]() {
+    auto t = STObjMap.begin();
+    for (auto it = STObjMap.begin(); it != STObjMap.end(); ++it) {
+      Obj *obj = it->second;
+      string sim = obj->getSim();
+      float val = obj->getValue();
+      string massage = "set " + sim + " " + to_string(val) + "\r\n";
+      char *m;
+      strcpy(m, massage.c_str());
+      int is_send = send(clientSocket, m, strlen(m), 0);
+      if (is_send == -1) {
+
+      } else {
+
+      }
     }
-    string i = array[index + 1];
-    char* ip;
-    strcpy(ip, i.c_str());
-    int port = stoi(array[index + 2]);
-    sockaddr_in adress;
-    adress.sin_family = AF_INET;
-    adress.sin_addr.s_addr = inet_addr("127.0.0.1");
-    adress.sin_port = htons(port);
-    int isConnect = connect(clientSocket,(struct sockaddr *)&adress, sizeof(adress));
-    if (isConnect == -1) {
-        //
-        return -2;
-    } else {
-        //
-    }
-    thread threadClient([clientSocket, STObjMap]() {
-        auto t = STObjMap.begin();
-        for ( auto it = STObjMap.begin(); it != STObjMap.end(); ++it ) {
-            Obj* obj = it->second;
-            string sim = obj->getSim();
-            float val = obj->getValue();
-            string massage = "set " + sim + " " + to_string(val) + "\r\n";
-            char* m;
-            strcpy(m, massage.c_str());
-            int is_send = send(clientSocket, m, strlen(m), 0);
-            if (is_send == -1) {
-
-
-            } else {
-
-            }
-        }
-    });
-    return 3;
+  });
+  return 3;
 }
 
-
-int ifCommand:: execute(vector<string> &array, int index,map<string, Obj *> &STSimulatorMap,
-           unordered_map<string, Obj *> &STObjMap,
-                        unordered_map<string, Command*> &commandMap) {
-    bool flag = false;
-    int counter = 1;
-    string s1 = array[index + 1];
-    string s2 = array[index + 2];
-    if (s2 == "{") {
-        counter = 3;
-        flag = checkCondition1(s1, STObjMap);
+int ifCommand::execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
+                       unordered_map<string, Obj *> &STObjMap,
+                       unordered_map<string, Command *> &commandMap) {
+  bool flag = false;
+  int counter = 1;
+  string s1 = array[index + 1];
+  string s2 = array[index + 2];
+  if (s2 == "{") {
+    counter = 3;
+    flag = checkCondition1(s1, STObjMap);
 //        //find if s1 is true value.
 //        auto it  = STObjMap.find(s1);
 //        // variable
@@ -165,96 +163,118 @@ int ifCommand:: execute(vector<string> &array, int index,map<string, Obj *> &STS
 //                }
 //            }
 //        }
-    } else {
-        counter = 5;
-        string s3 = array[index + 3];
-        flag = checkCondition2(s1, s2, s3, STObjMap);
-    }
-    if (!flag) {
-        while (array[index + counter] != "}") {
-            counter++;
-        }
-        return counter;
-    } else {
-        while (array[index + counter] != "}") {
-            Command* c = commandMap.find(array[index + counter])->second;
-            counter += c->execute(array, index, STSimulatorMap,
-                    STObjMap, commandMap);
-        }
+  } else {
+    counter = 5;
+    string s3 = array[index + 3];
+    flag = checkCondition2(s1, s2, s3, STObjMap);
+  }
+  if (!flag) {
+    while (array[index + counter] != "}") {
+      counter++;
     }
     return counter;
+  } else {
+    while (array[index + counter] != "}") {
+      Command *c = commandMap.find(array[index + counter])->second;
+      counter += c->execute(array, index, STSimulatorMap,
+                            STObjMap, commandMap);
+    }
+  }
+  return counter;
 }
 
-int whileCommand:: execute(vector<string> &array,
-                           int index,
-                           map<string, Obj *> &STSimulatorMap,
-                           unordered_map<string, Obj *> &STObjMap,
-                           unordered_map<string, Command*> &commandMap) {
-    bool flag = false;
-    int counter = 1;
-    string s1 = array[index + 1];
-    string s2 = array[index + 2];
-    if (s2 == "{") {
-        counter = 3;
-        // find if s1 is true value.
-        auto it = STObjMap.find(s1);
-        // variable
-        if (STObjMap.find(s1) != STObjMap.end()) {
-            float val = it->second->getValue();
-            if (val > 0) {
-                flag = true;
-            }
-        } else {
-            // number
-            regex isFloat("[-]?([0-9]*[.])?[0-9]+");
-            if (regex_match(s1, isFloat)) {
-                if (stof(s1)) {
-                    flag = true;
-                }
-            } else {
-                if (calculateExpression(STObjMap, s1) > 0) {
-                    flag = true;
-                }
-            }
-        }
+int whileCommand::execute(vector<string> &array,
+                          int index,
+                          map<string, Obj *> &STSimulatorMap,
+                          unordered_map<string, Obj *> &STObjMap,
+                          unordered_map<string, Command *> &commandMap) {
+  bool flag = false;
+  int counter = 1;
+  string s1 = array[index + 1];
+  string s2 = array[index + 2];
+  if (s2 == "{") {
+    counter = 3;
+    // find if s1 is true value.
+    auto it = STObjMap.find(s1);
+    // variable
+    if (STObjMap.find(s1) != STObjMap.end()) {
+      float val = it->second->getValue();
+      if (val > 0) {
+        flag = true;
+      }
     } else {
-        counter = 5;
-        string s3 = array[index + 3];
-        // expression
-        float f1 = calculateExpression(STObjMap, s1);
-        float f3 = calculateExpression(STObjMap, s3);
+      // number
+      regex isFloat("[-]?([0-9]*[.])?[0-9]+");
+      if (regex_match(s1, isFloat)) {
+        if (stof(s1)) {
+          flag = true;
+        }
+      } else {
+        if (calculateExpression(STObjMap, s1) > 0) {
+          flag = true;
+        }
+      }
     }
+  } else {
+    counter = 5;
+    string s3 = array[index + 3];
+    // expression
+    float f1 = calculateExpression(STObjMap, s1);
+    float f3 = calculateExpression(STObjMap, s3);
+  }
 }
-bool conditionParser:: checkCondition1(string var,
-                     unordered_map<string, Obj *> &STObjMap) {
-    float val = calculateExpression(STObjMap, var);
-    if (val) {
-        return true;
-    }
-    return false;
+bool conditionParser::checkCondition1(string var,
+                                      unordered_map<string, Obj *> &STObjMap) {
+  float val = calculateExpression(STObjMap, var);
+  if (val) {
+    return true;
+  }
+  return false;
 }
-bool conditionParser:: checkCondition2(string var1, string condition, string var2,
-                     unordered_map<string, Obj *> &STObjMap) {
-    bool flag = false;
-    float val1 = calculateExpression(STObjMap, var1);
-    float val2 = calculateExpression(STObjMap, var2);
-    if (condition == "!=") {
-        flag = (val1 != val2);
-    }
-    if (condition == "==") {
-        flag = (val1 == val2);
-    }
-    if (condition == ">=") {
-        flag = (val1 >= val2);
-    }
-    if (condition == "<=") {
-        flag = (val1 <= val2);
-    }
-    if (condition == ">") {
-        flag = (val1 > val2);
-    }
-    if (condition == "<") {
-        flag = (val1 < val2);
-    }
-    return flag;
+bool conditionParser::checkCondition2(string var1, string condition, string var2,
+                                      unordered_map<string, Obj *> &STObjMap) {
+  bool flag = false;
+  float val1 = calculateExpression(STObjMap, var1);
+  float val2 = calculateExpression(STObjMap, var2);
+  if (condition == "!=") {
+    flag = (val1 != val2);
+  }
+  if (condition == "==") {
+    flag = (val1 == val2);
+  }
+  if (condition == ">=") {
+    flag = (val1 >= val2);
+  }
+  if (condition == "<=") {
+    flag = (val1 <= val2);
+  }
+  if (condition == ">") {
+    flag = (val1 > val2);
+  }
+  if (condition == "<") {
+    flag = (val1 < val2);
+  }
+  return flag;
+}
+
+int printCommand::execute(vector<string> &array,
+                          int index,
+                          map<string, Obj *> &STSimulatorMap,
+                          unordered_map<string, Obj *> &STObjMap,
+                          unordered_map<string, Command *> &commandMap) {
+  return 0;
+}
+
+int sleepCommand::execute(vector<string> &array,
+                          int index,
+                          map<string, Obj *> &STSimulatorMap,
+                          unordered_map<string, Obj *> &STObjMap,
+                          unordered_map<string, Command *> &commandMap) {
+  return 0;
+}
+
+int objCommand:: execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
+                      unordered_map<string, Obj *> &STObjMap,
+                      unordered_map<string, Command*> &commandMap){
+  return 0;
 }
