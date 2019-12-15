@@ -143,51 +143,32 @@ int ifCommand:: execute(vector<string> &array, int index,unordered_map<string, O
     string s2 = array[index + 2];
     if (s2 == "{") {
         counter = 3;
-        //find if s1 is true value.
-        auto it  = STObjMap.find(s1);
-        // variable
-        if (STObjMap.find(s1) != STObjMap.end()) {
-            float val = it->second->getValue();
-            if (val > 0) {
-                flag = true;
-            }
-        } else {
-            // number
-            regex isFloat("[-]?([0-9]*[.])?[0-9]+");
-            if (regex_match(s1, isFloat)) {
-                if (stof(s1)) {
-                    flag = true;
-                }
-            } else {
-                if(calculateExpression(STObjMap,s1) > 0) {
-                  flag = true;
-                }
-            }
-        }
+        flag = checkCondition1(s1, STObjMap);
+//        //find if s1 is true value.
+//        auto it  = STObjMap.find(s1);
+//        // variable
+//        if (STObjMap.find(s1) != STObjMap.end()) {
+//            float val = it->second->getValue();
+//            if (val > 0) {
+//                flag = true;
+//            }
+//        } else {
+//            // number
+//            regex isFloat("[-]?([0-9]*[.])?[0-9]+");
+//            if (regex_match(s1, isFloat)) {
+//                if (stof(s1)) {
+//                    flag = true;
+//                }
+//            } else {
+//                if(calculateExpression(STObjMap,s1) > 0) {
+//                  flag = true;
+//                }
+//            }
+//        }
     } else {
         counter = 5;
         string s3 = array[index + 3];
-        // expression
-        float f1 = calculateExpression(STObjMap,s1);
-        float f3 = calculateExpression(STObjMap,s3);
-        if (s2 == "!=") {
-            flag = (f1 != f3);
-        }
-        if (s2 == "==") {
-            flag = (f1 == f3);
-        }
-        if (s2 == ">=") {
-            flag = (f1 >= f3);
-        }
-        if (s2 == "<=") {
-            flag = (f1 <= f3);
-        }
-        if (s2 == ">") {
-            flag = (f1 > f3);
-        }
-        if (s2 == "<") {
-            flag = (f1 < f3);
-        }
+        flag = checkCondition2(s1, s2, s3, STObjMap);
     }
     if (!flag) {
         while (array[index + counter] != "}") {
@@ -202,4 +183,78 @@ int ifCommand:: execute(vector<string> &array, int index,unordered_map<string, O
         }
     }
     return counter;
+}
+
+int whileCommand:: execute(vector<string> &array,
+                           int index,
+                           unordered_map<string, Obj *> &STSimulatorMap,
+                           unordered_map<string, Obj *> &STObjMap,
+                           unordered_map<string, Command*> &commandMap) {
+    bool flag = false;
+    int counter = 1;
+    string s1 = array[index + 1];
+    string s2 = array[index + 2];
+    if (s2 == "{") {
+        counter = 3;
+        // find if s1 is true value.
+        auto it = STObjMap.find(s1);
+        // variable
+        if (STObjMap.find(s1) != STObjMap.end()) {
+            float val = it->second->getValue();
+            if (val > 0) {
+                flag = true;
+            }
+        } else {
+            // number
+            regex isFloat("[-]?([0-9]*[.])?[0-9]+");
+            if (regex_match(s1, isFloat)) {
+                if (stof(s1)) {
+                    flag = true;
+                }
+            } else {
+                if (calculateExpression(STObjMap, s1) > 0) {
+                    flag = true;
+                }
+            }
+        }
+    } else {
+        counter = 5;
+        string s3 = array[index + 3];
+        // expression
+        float f1 = calculateExpression(STObjMap, s1);
+        float f3 = calculateExpression(STObjMap, s3);
+    }
+}
+bool conditionParser:: checkCondition1(string var,
+                     unordered_map<string, Obj *> &STObjMap) {
+    float val = calculateExpression(STObjMap, var);
+    if (val) {
+        return true;
+    }
+    return false;
+}
+bool conditionParser:: checkCondition2(string var1, string condition, string var2,
+                     unordered_map<string, Obj *> &STObjMap) {
+    bool flag = false;
+    float val1 = calculateExpression(STObjMap, var1);
+    float val2 = calculateExpression(STObjMap, var2);
+    if (condition == "!=") {
+        flag = (val1 != val2);
+    }
+    if (condition == "==") {
+        flag = (val1 == val2);
+    }
+    if (condition == ">=") {
+        flag = (val1 >= val2);
+    }
+    if (condition == "<=") {
+        flag = (val1 <= val2);
+    }
+    if (condition == ">") {
+        flag = (val1 > val2);
+    }
+    if (condition == "<") {
+        flag = (val1 < val2);
+    }
+    return flag;
 }

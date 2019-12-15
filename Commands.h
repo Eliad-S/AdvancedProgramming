@@ -56,15 +56,19 @@ class objCommand : public Command {
 class conditionParser : public Command {
   public:
   vector<Command *> commands;
+  bool checkCondition1(string var,
+                         unordered_map<string, Obj *> &STObjMap);
+  bool checkCondition2(string var1, string condition, string var2,
+                         unordered_map<string, Obj *> &STObjMap);
 };
 
-class ifCommand : public Command {
+class ifCommand : public conditionParser {
   virtual int execute(vector<string> &array, int index, unordered_map<string, Obj *> &STSimulatorMap,
                       unordered_map<string, Obj *> &STObjMap,
                       unordered_map<string, Command*> &commandMap);
 };
 
-class whileCommand : public Command {
+class whileCommand : public conditionParser {
   virtual int execute(vector<string> &array, int index, unordered_map<string, Obj *> &STSimulatorMap,
                       unordered_map<string, Obj *> &STObjMap,
                       unordered_map<string, Command*> &commandMap);

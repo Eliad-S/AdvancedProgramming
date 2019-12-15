@@ -233,6 +233,5 @@ int main(int argc, char* argv[]) {
     for (auto f = tokens.begin(); f < tokens.end(); f++) {
         cout << *f << endl;
     }
-
     return 0;
 }
