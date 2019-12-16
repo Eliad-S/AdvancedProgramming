@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include "Commands.h"
 #include "InterpreterFlight.h"
-#include <math.h>
+
 
 
 using namespace std;
@@ -19,11 +19,7 @@ class InterpreterFlight {
   map<string, Obj*> STSimulatorMap;
   unordered_map<string, Obj*> STObjMap;
   vector<string> array;
-
- public:
-  void setCommandMap(unordered_map<string, Command*> &map);
-  void setSTSimulatorMap(map<string, Obj*> & mapa);
-  vector<string> lexer(ifstream &in);
+  static InterpreterFlight* instance;
 
   InterpreterFlight(ifstream &inFile) {
     this->commandMap =unordered_map<string, Command*>();
@@ -34,7 +30,28 @@ class InterpreterFlight {
     setSTSimulatorMap(this->STSimulatorMap);
     inFile.close();
   }
+  InterpreterFlight() {}
 
+ public:
+  static InterpreterFlight *getInstance() {
+    if (!instance)
+      instance = new InterpreterFlight();
+    return instance;
+  }
+  static InterpreterFlight *getInstance(ifstream &in) {
+    if (!instance)
+      instance = new InterpreterFlight(in);
+    return instance;
+  }
+  unordered_map<string, Command*>& get_CommandMap();
+  map<string, Obj*>& get_STSimulatorMap();
+  unordered_map<string, Obj*>& get_STObjMap();
+  vector<string>& get_Array();
+
+  void setCommandMap(unordered_map<string, Command*> &map);
+  void setSTSimulatorMap(map<string, Obj*> &map);
+  vector<string> lexer(ifstream &in);
   void parser();
 };
+
 #endif //ADVANCED__INTERPRETERFLIGHT_H_

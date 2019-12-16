@@ -3,6 +3,21 @@
 //
 #include "InterpreterFlight.h"
 
+InterpreterFlight* InterpreterFlight::instance = 0;
+
+unordered_map<string, Command*>& InterpreterFlight::get_CommandMap() {
+  return this->commandMap;
+}
+map<string, Obj*>& InterpreterFlight :: get_STSimulatorMap() {
+  return this->STSimulatorMap;
+}
+unordered_map<string, Obj*>& InterpreterFlight::get_STObjMap() {
+  return  this->STObjMap;
+}
+vector<string>& InterpreterFlight::get_Array() {
+  return this->array;
+}
+
 void InterpreterFlight::parser() {
 
   int index = 0;
@@ -11,7 +26,7 @@ void InterpreterFlight::parser() {
     unordered_map<string, Command *>::iterator itCommand = commandMap.find(*itLexer);
     if (itCommand != commandMap.end()) {
       Command *c = commandMap.find(*itLexer)->second;
-      c->execute(array, index, STSimulatorMap, STObjMap, commandMap);
+      c->execute(index);
     }
   }
 };
@@ -27,7 +42,7 @@ void InterpreterFlight::setCommandMap(unordered_map<string, Command *> &map) {
   map["if"] = new ifCommand();
 }
 
-void InterpreterFlight::setSTSimulatorMap(map<string, Obj *> & map) {
+void InterpreterFlight::setSTSimulatorMap(map<string, Obj *> &map) {
   Obj *airspeed_indicator_indicated_speed_kt = new Obj("/instrumentation/airspeed-indicator/indicated-speed-kt");
   map["airspeed_indicator_indicated_speed_kt"] = airspeed_indicator_indicated_speed_kt;
   Obj *altimeter_indicated_altitude_ft = new Obj("/instrumentation/altimeter/indicated-altitude-ft");

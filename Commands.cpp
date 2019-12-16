@@ -6,7 +6,20 @@
 #include <regex>
 #include "Commands.h"
 #include "ex1.h"
+#include "InterpreterFlight.h"
 
+unordered_map<string, Command*>& getCommandMap() {
+  return InterpreterFlight::getInstance()->get_CommandMap();
+}
+map<string, Obj*>& getSTSimulatorMap() {
+  return InterpreterFlight::getInstance()->get_STSimulatorMap();
+}
+unordered_map<string, Obj*>& getSTObjMap() {
+  return InterpreterFlight::getInstance()->get_STObjMap();
+}
+vector<string>& getArray(){
+  return InterpreterFlight::getInstance()->get_Array();
+}
 float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const string &e) {
   Interpreter *interpreter = new Interpreter(STObjMap);
   Expression *expression = nullptr;
@@ -25,10 +38,8 @@ float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const
   }
   return result;
 }
-int openDataCommand::execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
-                             unordered_map<string, Obj *> &STObjMap,
-                             unordered_map<string, Command *> &commandMap) {
-  string portS = array[index + 1];
+int openDataCommand::execute(int index) {
+  string portS = getArray()[index + 1];
   //check if the its a number****
   int port = stoi(portS);
   char buffer[1024] = {0};
@@ -78,43 +89,35 @@ int openDataCommand::execute(vector<string> &array, int index, map<string, Obj *
   return 2;
 }
 
-int varCommand::execute(vector<string> &array,
-                        int index,
-                        map<string, Obj *> &STSimulatorMap,
-                        unordered_map<string, Obj *> &STObjMap,
-                        unordered_map<string, Command *> &commandMap) {
+int varCommand::execute(int index) {
 
 }
 
-int openControlCommand::execute(vector<string> &array,
-                                int index,
-                                map<string, Obj *> &STSimulatorMap,
-                                unordered_map<string, Obj *> &STObjMap,
-                                unordered_map<string, Command *> &commandMap) {
+int openControlCommand::execute(int index) {
   int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
   if (clientSocket == -1) {
     // error
     std::cerr << "could not create a socket" << endl;
     return -1;
   }
-  string i = array[index + 1];
+  string i = getArray()[index + 1];
   char *ip;
   strcpy(ip, i.c_str());
-  int port = stoi(array[index + 2]);
-  sockaddr_in adress;
-  adress.sin_family = AF_INET;
-  adress.sin_addr.s_addr = inet_addr("127.0.0.1");
-  adress.sin_port = htons(port);
-  int isConnect = connect(clientSocket, (struct sockaddr *) &adress, sizeof(adress));
+  int port = stoi(getArray()[index + 2]);
+  sockaddr_in address;
+  address.sin_family = AF_INET;
+  address.sin_addr.s_addr = inet_addr("127.0.0.1");
+  address.sin_port = htons(port);
+  int isConnect = connect(clientSocket, (struct sockaddr *) &address, sizeof(address));
   if (isConnect == -1) {
     //
     return -2;
   } else {
     //
   }
-  thread threadClient([clientSocket, STObjMap]() {
-    auto t = STObjMap.begin();
-    for (auto it = STObjMap.begin(); it != STObjMap.end(); ++it) {
+  thread threadClient([clientSocket]() {
+    auto t = getSTObjMap().begin();
+    for (auto it = getSTObjMap().begin(); it != getSTObjMap().end(); ++it) {
       Obj *obj = it->second;
       string sim = obj->getSim();
       float val = obj->getValue();
@@ -132,16 +135,14 @@ int openControlCommand::execute(vector<string> &array,
   return 3;
 }
 
-int ifCommand::execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
-                       unordered_map<string, Obj *> &STObjMap,
-                       unordered_map<string, Command *> &commandMap) {
+int ifCommand::execute(int index) {
   bool flag = false;
   int counter = 1;
-  string s1 = array[index + 1];
-  string s2 = array[index + 2];
+  string s1 = getArray()[index + 1];
+  string s2 = getArray()[index + 2];
   if (s2 == "{") {
     counter = 3;
-    flag = checkCondition1(s1, STObjMap);
+    flag = checkCondition1(s1, getSTObjMap());
 //        //find if s1 is true value.
 //        auto it  = STObjMap.find(s1);
 //        // variable
@@ -165,39 +166,34 @@ int ifCommand::execute(vector<string> &array, int index, map<string, Obj *> &STS
 //        }
   } else {
     counter = 5;
-    string s3 = array[index + 3];
-    flag = checkCondition2(s1, s2, s3, STObjMap);
+    string s3 = getArray()[index + 3];
+    flag = checkCondition2(s1, s2, s3, getSTObjMap());
   }
   if (!flag) {
-    while (array[index + counter] != "}") {
+    while (getArray()[index + counter] != "}") {
       counter++;
     }
     return counter;
   } else {
-    while (array[index + counter] != "}") {
-      Command *c = commandMap.find(array[index + counter])->second;
-      counter += c->execute(array, index, STSimulatorMap,
-                            STObjMap, commandMap);
+    while (getArray()[index + counter] != "}") {
+      Command *c = getCommandMap().find(getArray()[index + counter])->second;
+      counter += c->execute(index);
     }
   }
   return counter;
 }
 
-int whileCommand::execute(vector<string> &array,
-                          int index,
-                          map<string, Obj *> &STSimulatorMap,
-                          unordered_map<string, Obj *> &STObjMap,
-                          unordered_map<string, Command *> &commandMap) {
+int whileCommand::execute(int index) {
   bool flag = false;
   int counter = 1;
-  string s1 = array[index + 1];
-  string s2 = array[index + 2];
+  string s1 = getArray()[index + 1];
+  string s2 = getArray()[index + 2];
   if (s2 == "{") {
     counter = 3;
     // find if s1 is true value.
-    auto it = STObjMap.find(s1);
+    auto it = getSTObjMap().find(s1);
     // variable
-    if (STObjMap.find(s1) != STObjMap.end()) {
+    if (getSTObjMap().find(s1) != getSTObjMap().end()) {
       float val = it->second->getValue();
       if (val > 0) {
         flag = true;
@@ -210,17 +206,17 @@ int whileCommand::execute(vector<string> &array,
           flag = true;
         }
       } else {
-        if (calculateExpression(STObjMap, s1) > 0) {
+        if (calculateExpression(getSTObjMap(), s1) > 0) {
           flag = true;
         }
       }
     }
   } else {
     counter = 5;
-    string s3 = array[index + 3];
+    string s3 = getArray()[index + 3];
     // expression
-    float f1 = calculateExpression(STObjMap, s1);
-    float f3 = calculateExpression(STObjMap, s3);
+    float f1 = calculateExpression(getSTObjMap(), s1);
+    float f3 = calculateExpression(getSTObjMap(), s3);
   }
 }
 bool conditionParser::checkCondition1(string var,
@@ -257,24 +253,14 @@ bool conditionParser::checkCondition2(string var1, string condition, string var2
   return flag;
 }
 
-int printCommand::execute(vector<string> &array,
-                          int index,
-                          map<string, Obj *> &STSimulatorMap,
-                          unordered_map<string, Obj *> &STObjMap,
-                          unordered_map<string, Command *> &commandMap) {
+int printCommand::execute(int index) {
   return 0;
 }
 
-int sleepCommand::execute(vector<string> &array,
-                          int index,
-                          map<string, Obj *> &STSimulatorMap,
-                          unordered_map<string, Obj *> &STObjMap,
-                          unordered_map<string, Command *> &commandMap) {
+int sleepCommand::execute(int index) {
   return 0;
 }
 
-int objCommand:: execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
-                      unordered_map<string, Obj *> &STObjMap,
-                      unordered_map<string, Command*> &commandMap){
+int objCommand:: execute(int index){
   return 0;
 }

@@ -22,36 +22,26 @@ class Command {
 
  public:
     condition_variable cv;
-  virtual int execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
-                      unordered_map<string, Obj *> &STObjMap,
-                      unordered_map<string, Command*> &commandMap) = 0;
+  virtual int execute(int index) = 0;
 
   float calculateExpression(unordered_map<string, Obj *> &STObjMap,  const string& e);
   virtual ~Command() {}
 };
 
 class openDataCommand : public Command {
-  virtual int execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
-                      unordered_map<string, Obj *> &STObjMap,
-                      unordered_map<string, Command*> &commandMap);
+  virtual int execute(int index);
 };
 
 class openControlCommand : public Command {
-  virtual int execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
-                      unordered_map<string, Obj *> &STObjMap,
-                      unordered_map<string, Command*> &commandMap);
+  virtual int execute(int index);
 };
 
 class varCommand : public Command {
-  virtual int execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
-                      unordered_map<string, Obj *> &STObjMap,
-                      unordered_map<string, Command*> &commandMap);
+  virtual int execute(int index);
 };
 
 class objCommand : public Command {
-  virtual int execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
-                      unordered_map<string, Obj *> &STObjMap,
-                      unordered_map<string, Command*> &commandMap);
+  virtual int execute(int index);
 };
 
 class conditionParser : public Command {
@@ -64,24 +54,16 @@ class conditionParser : public Command {
 };
 
 class ifCommand : public conditionParser {
-  virtual int execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
-                      unordered_map<string, Obj *> &STObjMap,
-                      unordered_map<string, Command*> &commandMap);
+  virtual int execute(int index);
 };
 
 class whileCommand : public conditionParser {
-  virtual int execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
-                      unordered_map<string, Obj *> &STObjMap,
-                      unordered_map<string, Command*> &commandMap);
+  virtual int execute(int index);
 };
 class printCommand : public Command {
-  virtual int execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
-                      unordered_map<string, Obj *> &STObjMap,
-                      unordered_map<string, Command*> &commandMap);
+  virtual int execute(int index);
 };
 class sleepCommand : public Command {
-  virtual int execute(vector<string> &array, int index, map<string, Obj *> &STSimulatorMap,
-                      unordered_map<string, Obj *> &STObjMap,
-                      unordered_map<string, Command*> &commandMap);
+  virtual int execute(int index);
 };
 #endif //ADVANCED__COMMANDS_H_
