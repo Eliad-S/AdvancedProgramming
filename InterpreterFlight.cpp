@@ -18,6 +18,10 @@ vector<string>& InterpreterFlight::get_Array() {
   return this->array;
 }
 
+void InterpreterFlight::setTokens(vector<string> &tokens) {
+  this->array = tokens;
+}
+
 void InterpreterFlight::parser() {
 
   int index = 0;

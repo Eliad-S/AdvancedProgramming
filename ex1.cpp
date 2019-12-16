@@ -3,7 +3,6 @@
 //
 
 #include "ex1.h"
-#include "Obj.h"
 
 //calculate functions.
 

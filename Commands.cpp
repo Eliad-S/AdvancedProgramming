@@ -3,11 +3,9 @@
 //
 
 
-#include <regex>
-#include "Commands.h"
-#include "ex1.h"
-#include "InterpreterFlight.h"
 
+#include "InterpreterFlight.h"
+#include "ex1.h"
 unordered_map<string, Command*>& getCommandMap() {
   return InterpreterFlight::getInstance()->get_CommandMap();
 }

@@ -8,7 +8,6 @@
 #include <fstream>
 #include <unordered_map>
 #include "Commands.h"
-#include "InterpreterFlight.h"
 
 
 
@@ -20,26 +19,20 @@ class InterpreterFlight {
   unordered_map<string, Obj*> STObjMap;
   vector<string> array;
   static InterpreterFlight* instance;
-public:
-  InterpreterFlight(vector<string> tokens) {
+
+  InterpreterFlight() {
     this->commandMap =unordered_map<string, Command*>();
     this->STSimulatorMap = map<string, Obj*>();
     this->STObjMap = unordered_map<string, Obj*>();
-    this->array = tokens;
     setCommandMap(this->commandMap);
     setSTSimulatorMap(this->STSimulatorMap);
-    inFile.close();
   }
-  InterpreterFlight() {}
+public:
+
 
   static InterpreterFlight *getInstance() {
     if (!instance)
       instance = new InterpreterFlight();
-    return instance;
-  }
-  static InterpreterFlight *getInstance(ifstream &in) {
-    if (!instance)
-      instance = new InterpreterFlight(in);
     return instance;
   }
   unordered_map<string, Command*>& get_CommandMap();
@@ -49,7 +42,7 @@ public:
 
   void setCommandMap(unordered_map<string, Command*> &map);
   void setSTSimulatorMap(map<string, Obj*> &map);
-  vector<string> lexer(ifstream &in);
+  void setTokens(vector<string> &tokens);
   void parser();
 };
 
