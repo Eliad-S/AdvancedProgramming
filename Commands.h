@@ -60,9 +60,11 @@ class ifCommand : public conditionParser {
 class whileCommand : public conditionParser {
   virtual int execute(int index);
 };
+
 class printCommand : public Command {
   virtual int execute(int index);
 };
+
 class sleepCommand : public Command {
   virtual int execute(int index);
 };

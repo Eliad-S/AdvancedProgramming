@@ -20,19 +20,18 @@ class InterpreterFlight {
   unordered_map<string, Obj*> STObjMap;
   vector<string> array;
   static InterpreterFlight* instance;
-
-  InterpreterFlight(ifstream &inFile) {
+public:
+  InterpreterFlight(vector<string> tokens) {
     this->commandMap =unordered_map<string, Command*>();
     this->STSimulatorMap = map<string, Obj*>();
     this->STObjMap = unordered_map<string, Obj*>();
-    this->array = lexer(inFile);
+    this->array = tokens;
     setCommandMap(this->commandMap);
     setSTSimulatorMap(this->STSimulatorMap);
     inFile.close();
   }
   InterpreterFlight() {}
 
- public:
   static InterpreterFlight *getInstance() {
     if (!instance)
       instance = new InterpreterFlight();
