@@ -19,12 +19,12 @@
 #include "InterpreterFlight.h"
 #include <regex>
 
-
 using namespace std;
+condition_variable cv;
+mutex m;
 class Command {
 
  public:
-    condition_variable cv;
   virtual int execute(int index) = 0;
 
   float calculateExpression(unordered_map<string, Obj *> &STObjMap,  const string& e);

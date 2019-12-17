@@ -97,3 +97,7 @@ void InterpreterFlight::setSTSimulatorMap(map<string, Obj *> &map) {
 bool InterpreterFlight::getServer_Thread() {
   return this->serverThread;
 }
+
+bool InterpreterFlight::getClient_Thread() {
+    return this.clientThread;
+}

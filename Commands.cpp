@@ -26,6 +26,9 @@ vector<string> &getArray() {
 bool ServerThread() {
     return InterpreterFlight::getInstance()->getServer_Thread();
 }
+bool ThreadClient() {
+    return InterpreterFlight::getInstance()->getClient_Thread();
+}
 
 float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const string &e) {
     Interpreter *interpreter = new Interpreter(STObjMap);
@@ -148,6 +151,7 @@ int varCommand::execute(int index) {
                 }
             }
         }
+        cv.notify_one();
         return 5;
     } else {
         if (simOrEqual == "=") {
@@ -162,6 +166,7 @@ int varCommand::execute(int index) {
             obj = new Obj(varName, value);
             getSTObjMap()[varName] = obj;
         }
+        cv.notify_one();
         return 4;
     }
 }
@@ -185,28 +190,30 @@ int openControlCommand::execute(int index) {
     if (isConnect == -1) {
         cerr << "could not connect to the simulator" << endl;
         return -2;
-    } else {
-        //
     }
     thread threadClient([clientSocket]() {
-        auto t = getSTObjMap().begin();
-        for (auto it = getSTObjMap().begin(); it != getSTObjMap().end(); ++it) {
-            Obj *obj = it->second;
-            string sim = obj->getSim();
-            float val = obj->getValue();
-            string massage = "set " + sim + " " + to_string(val) + "\r\n";
-            char *m;
-            strcpy(m, massage.c_str());
-            int is_send = send(clientSocket, m, strlen(m), 0);
-            if (is_send == -1) {
+        while (ThreadClient()) {
+            auto t = getSTObjMap().begin();
+            for (auto it = getSTObjMap().begin(); it != getSTObjMap().end(); ++it) {
+                Obj *obj = it->second;
+                string sim = obj->getSim();
+                float val = obj->getValue();
+                string massage = "set " + sim + " " + to_string(val) + "\r\n";
+                char *p;
+                strcpy(p, massage.c_str());
+                int is_send = send(clientSocket, p, strlen(p), 0);
+                if (is_send == -1) {
 
-            } else {
-
+                }
+                unique_lock<mutex> ul(m);
+                cv.wait(ul);
             }
         }
     });
     return 3;
 }
+
+
 
 int ifCommand::execute(int index) {
     bool flag;
