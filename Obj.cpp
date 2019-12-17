@@ -6,7 +6,7 @@
 void Obj::setDirection(int d) {
   this->direction = d;
 }
-void Obj::setValue(int val) {
+void Obj::setValue(float val) {
   this->value = val;
 }
 

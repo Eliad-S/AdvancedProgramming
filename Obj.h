@@ -31,7 +31,7 @@ class Obj : public Expression{
     this->direction = d;
   }
   void setDirection(int d);
-  void setValue(int val);
+  void setValue(float val);
   //prefix
   Obj &operator++();
   Obj &operator--();
