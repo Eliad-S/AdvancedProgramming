@@ -24,6 +24,12 @@ class Obj : public Expression{
     this->valName = name;
     this->value = val;
   }
+  Obj(string name ,string& s, int d){
+    this->valName = name;
+    this->value = 0;
+    this->sim = s;
+    this->direction = d;
+  }
   void setDirection(int d);
   void setValue(int val);
   //prefix

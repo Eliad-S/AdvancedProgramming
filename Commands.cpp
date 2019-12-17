@@ -66,7 +66,7 @@ int openDataCommand::execute(int index) {
     string portS = getArray()[index + 1];
     //check if the its a number****
     int port = stoi(portS);
-    char buffer[1024] = {0};
+    char buffer[10000] = {0};
     int socketServer = socket(AF_INET, SOCK_STREAM, 0);
     if (socketServer == -1) {
         //error
@@ -81,7 +81,7 @@ int openDataCommand::execute(int index) {
         cerr << "could'nt bind the socket to an ip" << endl;
     }
 //making socket listen to the port
-    if (listen(socketServer, 1) == -1) {
+    if (listen(socketServer, 5) == -1) {
         cerr << "error during listening command" << endl;
     }
 //accepting a client.
@@ -92,7 +92,7 @@ int openDataCommand::execute(int index) {
     }
 
     close(socketServer);
-    int valRead = read(client_socket, buffer, 1024);
+    int valRead = read(client_socket, buffer, 10000);
 //check
     cout << buffer << endl;
 
@@ -104,22 +104,38 @@ int openDataCommand::execute(int index) {
         // while clientThread == true.
         while (ServerThread()) {
             sleep(10.0);
-            char buffer[1024] = {0};
-            int valRead = read(client_socket, buffer, 1024);
+            char buffer[10000] = {0};
+            int valRead = read(client_socket, buffer, 10000);
             //check
             cout << buffer << endl;
 
             setSimulatorDetails(buffer, valRead);
         }
     });
-    while (true) {
 
-    };
     return 2;
 }
 
 int varCommand::execute(int index) {
+  string varName = getArray()[index +1];
+  string simOrEqual = getArray()[index +2];
 
+  if(simOrEqual == "sim") {
+    string direction = getArray()[index +3];
+    string sim = getArray()[index + 4];
+
+//    for()
+//    Obj* obj;
+//    if(direction == "->") {
+//      obj = new Obj(varName,)
+//    }
+
+  }else{
+    if(simOrEqual == "=") {
+
+
+    }
+  }
 
 }
 
