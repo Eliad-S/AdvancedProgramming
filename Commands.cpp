@@ -116,6 +116,7 @@ void openDataCommand:: dataServerThread(int client_socket) {
         setSimulatorDetails(buffer, valRead);
     }
 }
+
 int varCommand::execute(int index) {
 //  string varName = getArray()[index +1];
 //  string simOrEqual = getArray()[index +2];
