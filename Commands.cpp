@@ -18,6 +18,10 @@ unordered_map<string, Obj*>& getSTObjMap() {
 vector<string>& getArray(){
   return InterpreterFlight::getInstance()->get_Array();
 }
+
+bool ServerThread(){
+  return InterpreterFlight::getInstance()->getServer_Thread();
+}
 float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const string &e) {
   Interpreter *interpreter = new Interpreter(STObjMap);
   Expression *expression = nullptr;
@@ -70,18 +74,20 @@ int openDataCommand::execute(int index) {
 //check
   cout << buffer << endl;
 
-  //setDetails(buffer, valRead ,STSimulatorMap);
+  setSimulatorDetails(buffer, valRead);
 
   //and after we got the first message from the simulator we can continue compile the rest,
   // and simultaneously continuing receive massage from the simulator.
   thread threadServer([client_socket]() {
-    while (true) {
+    // while clientThread == true.
+    while (ServerThread()) {
+      sleep(10.0);
       char buffer[1024] = {0};
       int valRead = read(client_socket, buffer, 1024);
       //check
       cout << buffer << endl;
 
-      //setDetails(buffer,velRead ,STSimulatorMap);});
+      //setDetails(buffer,velRead);});
     }
   });
   return 2;
@@ -252,11 +258,11 @@ bool conditionParser::checkCondition2(string var1, string condition, string var2
 }
 
 int printCommand::execute(int index) {
-  return 0;
+  cout << getArray()[index+1] << endl;
 }
 
 int sleepCommand::execute(int index) {
-  return 0;
+  sleep(stoi(getArray()[index+1]));
 }
 
 int objCommand:: execute(int index){

@@ -33,6 +33,8 @@ class Command {
 
 class openDataCommand : public Command {
   virtual int execute(int index);
+
+//  void setSimulatorDetails(char &buffer, valRead);
 };
 
 class openControlCommand : public Command {

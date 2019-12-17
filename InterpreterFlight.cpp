@@ -95,3 +95,6 @@ void InterpreterFlight::setSTSimulatorMap(map<string, Obj *> &map) {
   Obj *engine_rpm = new Obj("/engines/engine/rpm");
   map["engine_rpm"] = engine_rpm;
 }
+bool InterpreterFlight::getClient_Thread() {
+  return this->serverThread;
+}

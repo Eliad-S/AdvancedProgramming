@@ -19,6 +19,7 @@ class InterpreterFlight {
   unordered_map<string, Obj*> STObjMap;
   vector<string> array;
   static InterpreterFlight* instance;
+  bool serverThread;
 
   InterpreterFlight() {
     this->commandMap =unordered_map<string, Command*>();
@@ -26,6 +27,7 @@ class InterpreterFlight {
     this->STObjMap = unordered_map<string, Obj*>();
     setCommandMap(this->commandMap);
     setSTSimulatorMap(this->STSimulatorMap);
+    this->serverThread = true;
   }
 public:
 
@@ -44,6 +46,7 @@ public:
   void setSTSimulatorMap(map<string, Obj*> &map);
   void setTokens(vector<string> &tokens);
   void parser();
+  bool getServer_Thread();
 };
 
 #endif //ADVANCED__INTERPRETERFLIGHT_H_
