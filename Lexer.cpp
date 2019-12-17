@@ -191,35 +191,36 @@ public:
         if (index < s.length()) {
             tokens->push_back(s.substr(0, index));
             tokens->push_back("==");
-            tokens->push_back(s.substr(index + 2, s.length() - 2));
+            tokens->push_back(s.substr(index + 2, s.length() - 2-index-1));
+            cout << s << " " << s.length() << endl;
             goto end;
         }
         index = s.find("<=");
         if (index < s.length()) {
             tokens->push_back(s.substr(0, index));
             tokens->push_back("<=");
-            tokens->push_back(s.substr(index + 2, s.length() - 2));
+            tokens->push_back(s.substr(index + 2, s.length() - 2-index-1));
             goto end;
         }
         index = s.find(">=");
         if (index < s.length()) {
             tokens->push_back(s.substr(0, index));
             tokens->push_back(">=");
-            tokens->push_back(s.substr(index + 2, s.length() - 2));
+            tokens->push_back(s.substr(index + 2, s.length() - 2-index-1));
             goto end;
         }
         index = s.find(">");
         if (index < s.length()) {
             tokens->push_back(s.substr(0, index));
             tokens->push_back(">");
-            tokens->push_back(s.substr(index + 1, s.length() - 2));
+            tokens->push_back(s.substr(index + 1, s.length() - 2-index-1));
             goto end;
         }
         index = s.find("<");
         if (index < s.length()) {
             tokens->push_back(s.substr(0, index));
             tokens->push_back("<");
-            tokens->push_back(s.substr(index + 1, s.length() - 2));
+            tokens->push_back(s.substr(index + 1, s.length() - 2-index-1));
             goto end;
         } else {
             tokens->push_back(s.substr(0, s.length() - 2));

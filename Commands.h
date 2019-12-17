@@ -34,7 +34,8 @@ class Command {
 class openDataCommand : public Command {
   virtual int execute(int index);
 
-//  void setSimulatorDetails(char &buffer, valRead);
+public:
+  static void setSimulatorDetails(char buffer[], int valRead);
 };
 
 class openControlCommand : public Command {
