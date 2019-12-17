@@ -123,7 +123,7 @@ int varCommand::execute(int index) {
   if(simOrEqual == "sim") {
     string direction = getArray()[index +3];
     string sim = getArray()[index + 4];
-
+    if(direction == "->")
 //    for()
 //    Obj* obj;
 //    if(direction == "->") {
