@@ -208,7 +208,6 @@ int ifCommand::execute(int index) {
     }
     return counter;
 }
-
 int whileCommand::execute(int index) {
     bool flag;
     int counter1;
