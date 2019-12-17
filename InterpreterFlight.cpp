@@ -25,12 +25,11 @@ void InterpreterFlight::setTokens(vector<string> &tokens) {
 void InterpreterFlight::parser() {
 
   int index = 0;
-  vector<string>::iterator itLexer = array.begin();
   while (index < array.size()) {
-    unordered_map<string, Command *>::iterator itCommand = commandMap.find(*itLexer);
+    unordered_map<string, Command *>::iterator itCommand = commandMap.find(array[index]);
     if (itCommand != commandMap.end()) {
-      Command *c = commandMap.find(*itLexer)->second;
-      c->execute(index);
+      Command *c = commandMap.find(array[index])->second;
+      index += c->execute(index);
     }
   }
 };

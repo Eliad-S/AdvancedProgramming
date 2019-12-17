@@ -112,10 +112,14 @@ int openDataCommand::execute(int index) {
             setSimulatorDetails(buffer, valRead);
         }
     });
+    while (true) {
+
+    };
     return 2;
 }
 
 int varCommand::execute(int index) {
+
 
 }
 
