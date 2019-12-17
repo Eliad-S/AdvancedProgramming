@@ -64,7 +64,7 @@ void openDataCommand::setSimulatorDetails(char buffer[], int valRead) {
 
 int openDataCommand::execute(int index) {
     string portS = getArray()[index + 1];
-    //check if the its a number****
+    //check if the its a number
     int port = stoi(portS);
     char buffer[10000] = {0};
     int socketServer = socket(AF_INET, SOCK_STREAM, 0);
@@ -100,22 +100,22 @@ int openDataCommand::execute(int index) {
 
     //and after we got the first message from the simulator we can continue compile the rest,
     // and simultaneously continuing receive massage from the simulator.
-    thread threadServer([client_socket]() {
-        // while clientThread == true.
-        while (ServerThread()) {
-            sleep(10.0);
-            char buffer[10000] = {0};
-            int valRead = read(client_socket, buffer, 10000);
-            //check
-            cout << buffer << endl;
-
-            setSimulatorDetails(buffer, valRead);
-        }
-    });
+    thread threadServer(dataServerThread, client_socket);
 
     return 2;
 }
+void openDataCommand:: dataServerThread(int client_socket) {
+    // while clientThread == true.
+    while (ServerThread()) {
+        sleep(10.0);
+        char buffer[10000] = {0};
+        int valRead = read(client_socket, buffer, 10000);
+        //check
+        cout << buffer << endl;
 
+        setSimulatorDetails(buffer, valRead);
+    }
+}
 int varCommand::execute(int index) {
 //  string varName = getArray()[index +1];
 //  string simOrEqual = getArray()[index +2];
@@ -156,7 +156,7 @@ int openControlCommand::execute(int index) {
     address.sin_port = htons(port);
     int isConnect = connect(clientSocket, (struct sockaddr *) &address, sizeof(address));
     if (isConnect == -1) {
-        //
+        cerr << "could not connect to the simulator" << endl;
         return -2;
     } else {
         //
