@@ -48,16 +48,25 @@ float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const
 
 void openDataCommand::setSimulatorDetails(char buffer[], int valRead) {
     string details = buffer;
-    map<string, Obj *>::iterator it = getSTSimulatorMap().begin();
+    int i = 0;
     string substr = "";
-    for (int i = 0; i < valRead; i++) {
-        if (details[i] == ',' || details[i] == '\n') {
+    int index = details.find("\n");
+    int index2 = details.find("\n",index +1);
+    if(index2< details.length()){
+        i = index + 1;
+    }
+    map<string, Obj *>::iterator it = getSTSimulatorMap().begin();
+    for (;it!=getSTSimulatorMap().end() ;it++) {
+        if(details.find(",",i) < details.find("\n",i)) {
+            substr = details.substr(i ,details.find(",",i) - i);
             float val = stof(substr);
             it->second->setValue(val);
-            it++;
-            substr = "";
-        } else {
-            substr += details[i];
+            i =details.find(",", i) + 1;
+        }else {
+            substr = details.substr(i,details.find("\n",i) - i);
+            float val = stof(substr);
+            it->second->setValue(val);
+            break;
         }
     }
 }
@@ -66,7 +75,7 @@ int openDataCommand::execute(int index) {
     string portS = getArray()[index + 1];
     //check if the its a number
     int port = stoi(portS);
-    char buffer[10000] = {0};
+    char buffer[1024] = {0};
     int socketServer = socket(AF_INET, SOCK_STREAM, 0);
     if (socketServer == -1) {
         //error
@@ -92,10 +101,9 @@ int openDataCommand::execute(int index) {
     }
 
     close(socketServer);
-    int valRead = read(client_socket, buffer, 10000);
+    int valRead = read(client_socket, buffer, 1024);
 //check
-    cout << buffer << endl;
-
+cout << buffer <<endl;
     setSimulatorDetails(buffer, valRead);
 
     //and after we got the first message from the simulator we can continue compile the rest,
@@ -108,12 +116,11 @@ int openDataCommand::execute(int index) {
 void openDataCommand::dataServerThread(int client_socket) {
     // while clientThread == true.
     while (ServerThread()) {
-        sleep(10.0);
-        char buffer[10000] = {0};
-        int valRead = read(client_socket, buffer, 10000);
+        sleep(3.0);
+        char buffer[1024] = {0};
+        int valRead = read(client_socket, buffer, 1024);
         //check
-        cout << buffer << endl;
-
+cout << buffer<< endl;
         setSimulatorDetails(buffer, valRead);
     }
 }
