@@ -1,11 +1,8 @@
 #include <iostream>
 #include <vector>
-#include <fstream>
+#include "Lexer.h"
 using namespace std;
-class Lexer {
-public:
-    vector<string> token;
-    Lexer(string fileName) {
+Lexer::Lexer(string fileName) {
         ifstream in(fileName);
         string str;
         vector<string> lines;
@@ -55,6 +52,7 @@ public:
                     string withoutSpaces =
                             removeSpace((*i).substr(5, (*i).length() - 1));
                     splitWhileOrIf(withoutSpaces, &tokens);
+                    tokens.push_back("}");
                     substr = "";
                     break;
                 }
@@ -63,10 +61,11 @@ public:
                     string withoutSpaces =
                             removeSpace((*i).substr(2, (*i).length() - 1));
                     splitWhileOrIf(withoutSpaces, &tokens);
+                    tokens.push_back("}");
                     substr = "";
                     break;
                 }
-                if (substr == "}") {
+                if ((*i)[j] == '}') {
                     tokens.push_back("}");
                     substr = "";
                     break;
@@ -84,7 +83,7 @@ public:
         }
         this->token = tokens;
     }
-    string removeSpace(string str) {
+string Lexer:: removeSpace(string str) {
         string dest = "";
         for (int i = 0; i < str.length(); ++i)
             if (str[i] != ' ') {
@@ -92,7 +91,7 @@ public:
             }
         return dest;
     }
-    string removeQuotatin(string str) {
+string Lexer:: removeQuotatin(string str) {
         string dest = "";
         for (int i = 0; i < str.length(); ++i)
             if (str[i] != '"' && str[i] != ')' && str[i] != '(') {
@@ -100,7 +99,7 @@ public:
             }
         return dest;
     }
-    void splitOther(string s, vector<string> *tokens) {
+void Lexer:: splitOther(string s, vector<string> *tokens) {
         s = removeSpace(s);
         int index;
         index = s.find("+=");
@@ -132,7 +131,7 @@ public:
             return;
         }
     }
-    void splitVar(string s, vector<string> *tokens) {
+void Lexer:: splitVar(string s, vector<string> *tokens) {
         string name;
         tokens->push_back("var");
         int index = s.find("->");
@@ -156,13 +155,13 @@ public:
         tokens->push_back("sim");
         tokens->push_back(sim);
     }
-    void splitOpenDataServer(string s, vector<string> *tokens) {
+void Lexer:: splitOpenDataServer(string s, vector<string> *tokens) {
         tokens->push_back("openDataServer");
         int startIndex = s.find("(");
         int endIndex = s.find(")");
         tokens->push_back(s.substr(startIndex + 1, endIndex - 1)); // check
     }
-    void splitConnectControlClient(string s, vector<string> *tokens) {
+void Lexer:: splitConnectControlClient(string s, vector<string> *tokens) {
         tokens->push_back("connectControlClient");
         int startIndex = s.find("(");
         int endIndex = s.find(")");
@@ -173,15 +172,15 @@ public:
         tokens->push_back(withoutQuotatin.substr(indexComma + 1,
                                                  withoutQuotatin.length() - 1));
     }
-    void splitPrint(string s, vector<string> *tokens) {
+void Lexer:: splitPrint(string s, vector<string> *tokens) {
         tokens->push_back("Print");
         tokens->push_back(removeQuotatin(s.substr(1, s.length() - 1)));
     }
-    void splitSleep(string s, vector<string> *tokens) {
+void Lexer:: splitSleep(string s, vector<string> *tokens) {
         tokens->push_back("Sleep");
         tokens->push_back(removeQuotatin(s));
     }
-    void splitWhileOrIf(string s, vector<string> *tokens) {
+    void Lexer:: splitWhileOrIf(string s, vector<string> *tokens) {
         if (s[0] == '(' && s[s.length() - 1] == ')') {
             s = s.substr(1, s.length() - 2); // check
         }
@@ -228,6 +227,3 @@ public:
         end:
         tokens->push_back("{");
     }
-
-
-};

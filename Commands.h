@@ -53,10 +53,8 @@ class objCommand : public Command {
 class conditionParser : public Command {
   public:
   vector<Command *> commands;
-  bool checkCondition1(string var,
-                         unordered_map<string, Obj *> &STObjMap);
-  bool checkCondition2(string var1, string condition, string var2,
-                         unordered_map<string, Obj *> &STObjMap);
+  bool checkCondition1(string var);
+  bool checkCondition2(string var1, string condition, string var2);
 };
 
 class ifCommand : public conditionParser {

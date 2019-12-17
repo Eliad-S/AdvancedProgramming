@@ -117,25 +117,25 @@ int openDataCommand::execute(int index) {
 }
 
 int varCommand::execute(int index) {
-  string varName = getArray()[index +1];
-  string simOrEqual = getArray()[index +2];
-
-  if(simOrEqual == "sim") {
-    string direction = getArray()[index +3];
-    string sim = getArray()[index + 4];
-    if(direction == "->")
-//    for()
-//    Obj* obj;
-//    if(direction == "->") {
-//      obj = new Obj(varName,)
+//  string varName = getArray()[index +1];
+//  string simOrEqual = getArray()[index +2];
+//
+//  if(simOrEqual == "sim") {
+//    string direction = getArray()[index +3];
+//    string sim = getArray()[index + 4];
+//    if(direction == "->")
+////    for()
+////    Obj* obj;
+////    if(direction == "->") {
+////      obj = new Obj(varName,)
+////    }
+//
+//  }else{
+//    if(simOrEqual == "=") {
+//
+//
 //    }
-
-  }else{
-    if(simOrEqual == "=") {
-
-
-    }
-  }
+//  }
 
 }
 
@@ -182,38 +182,17 @@ int openControlCommand::execute(int index) {
 }
 
 int ifCommand::execute(int index) {
-    bool flag = false;
-    int counter = 1;
-    string s1 = getArray()[index + 1];
-    string s2 = getArray()[index + 2];
-    if (s2 == "{") {
+    bool flag;
+    int counter;
+    string v1 = getArray()[index + 1];
+    string v2 = getArray()[index + 2];
+    if (v2 == "{") {
         counter = 3;
-        flag = checkCondition1(s1, getSTObjMap());
-//        //find if s1 is true value.
-//        auto it  = STObjMap.find(s1);
-//        // variable
-//        if (STObjMap.find(s1) != STObjMap.end()) {
-//            float val = it->second->getValue();
-//            if (val > 0) {
-//                flag = true;
-//            }
-//        } else {
-//            // number
-//            regex isFloat("[-]?([0-9]*[.])?[0-9]+");
-//            if (regex_match(s1, isFloat)) {
-//                if (stof(s1)) {
-//                    flag = true;
-//                }
-//            } else {
-//                if(calculateExpression(STObjMap,s1) > 0) {
-//                  flag = true;
-//                }
-//            }
-//        }
+        flag = checkCondition1(v1);
     } else {
         counter = 5;
-        string s3 = getArray()[index + 3];
-        flag = checkCondition2(s1, s2, s3, getSTObjMap());
+        string v3 = getArray()[index + 3];
+        flag = checkCondition2(v1, v2, v3);
     }
     if (!flag) {
         while (getArray()[index + counter] != "}") {
@@ -230,56 +209,62 @@ int ifCommand::execute(int index) {
 }
 
 int whileCommand::execute(int index) {
-    bool flag = false;
-    int counter = 1;
-    string s1 = getArray()[index + 1];
-    string s2 = getArray()[index + 2];
-    if (s2 == "{") {
-        counter = 3;
-        // find if s1 is true value.
-        auto it = getSTObjMap().find(s1);
-        // variable
-        if (getSTObjMap().find(s1) != getSTObjMap().end()) {
-            float val = it->second->getValue();
-            if (val > 0) {
-                flag = true;
-            }
-        } else {
-            // number
-            regex isFloat("[-]?([0-9]*[.])?[0-9]+");
-            if (regex_match(s1, isFloat)) {
-                if (stof(s1)) {
-                    flag = true;
-                }
-            } else {
-                if (calculateExpression(getSTObjMap(), s1) > 0) {
-                    flag = true;
-                }
+    bool flag;
+    int counter1;
+    int counter2;
+    int whichCondition;
+    string v1 = getArray()[index + 1];
+    string v2 = getArray()[index + 2];
+    string v3;
+    if (v2 == "{") {
+        counter1 = 3;
+        flag = checkCondition1(v1);
+        whichCondition = 1;
+    } else {
+        counter1 = 5;
+        v3 = getArray()[index + 3];
+        flag = checkCondition2(v1, v2, v3);
+        whichCondition = 2;
+    }
+    counter2 = counter1;
+    while (getArray()[index + counter2] != "}") {
+        counter2++;
+    }
+    if (!flag) {
+        return counter2;
+    }
+    if (whichCondition == 1) {
+        while(checkCondition1(v1)) {
+            counter1 = 3;
+            while (getArray()[index + counter1] != "}") {
+                Command *c = getCommandMap().find(getArray()[index + counter1])->second;
+                counter1 += c->execute(index);
             }
         }
     } else {
-        counter = 5;
-        string s3 = getArray()[index + 3];
-        // expression
-        float f1 = calculateExpression(getSTObjMap(), s1);
-        float f3 = calculateExpression(getSTObjMap(), s3);
+        while(checkCondition2(v1, v2, v3)) {
+            counter1 = 5;
+            while (getArray()[index + counter1] != "}") {
+                Command *c = getCommandMap().find(getArray()[index + counter1])->second;
+                counter1 += c->execute(index);
+            }
+        }
     }
+    return counter2;
 }
 
-bool conditionParser::checkCondition1(string var,
-                                      unordered_map<string, Obj *> &STObjMap) {
-    float val = calculateExpression(STObjMap, var);
+bool conditionParser::checkCondition1(string var) {
+    float val = calculateExpression(getSTObjMap(), var);
     if (val) {
         return true;
     }
     return false;
 }
 
-bool conditionParser::checkCondition2(string var1, string condition, string var2,
-                                      unordered_map<string, Obj *> &STObjMap) {
+bool conditionParser::checkCondition2(string var1, string condition, string var2) {
     bool flag = false;
-    float val1 = calculateExpression(STObjMap, var1);
-    float val2 = calculateExpression(STObjMap, var2);
+    float val1 = calculateExpression(getSTObjMap(), var1);
+    float val2 = calculateExpression(getSTObjMap(), var2);
     if (condition == "!=") {
         flag = (val1 != val2);
     }
