@@ -118,26 +118,44 @@ void openDataCommand:: dataServerThread(int client_socket) {
 }
 
 int varCommand::execute(int index) {
-//  string varName = getArray()[index +1];
-//  string simOrEqual = getArray()[index +2];
-//
-//  if(simOrEqual == "sim") {
-//    string direction = getArray()[index +3];
-//    string sim = getArray()[index + 4];
-//    if(direction == "->")
-////    for()
-////    Obj* obj;
-////    if(direction == "->") {
-////      obj = new Obj(varName,)
-////    }
-//
-//  }else{
-//    if(simOrEqual == "=") {
-//
-//
-//    }
-//  }
+  string varName = getArray()[index + 1];
+  string simOrEqual = getArray()[index + 2];
+  Obj *obj;
 
+  //var name ->/<- sim
+  if (simOrEqual == "sim") {
+    string direction = getArray()[index + 3];
+    string sim = getArray()[index + 4];
+    if (direction == "->") {
+      obj = new Obj(varName, sim, 1);
+      getSTObjMap()[varName] = obj;
+    } else {
+      map<string, Obj *>::iterator it;
+      for (it = getSTSimulatorMap().begin(); it != getSTSimulatorMap().end(); it++) {
+        obj = it->second;
+        if (obj->getSim() == sim) {
+          obj->setName(varName);
+          getSTObjMap()[varName] = obj;
+          break;
+        }
+      }
+    }
+    return 5;
+  } else {
+    if (simOrEqual == "=") {
+      float value = 0;
+      string expression = getArray()[index + 2];
+      regex isFloat("[-]?([0-9]*[.])?[0-9]+");
+      if (regex_match(expression, isFloat)) {
+        value = stof(expression);
+      }else {
+        value = calculateExpression(getSTObjMap(),expression);
+      }
+      obj = new Obj(varName, value);
+      getSTObjMap()[varName] = obj;
+    }
+    return 4;
+  }
 }
 
 int openControlCommand::execute(int index) {

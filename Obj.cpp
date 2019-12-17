@@ -42,3 +42,6 @@ Obj &Obj::operator-=(float value) {
 float Obj::calculate() {
   return this->value;
 }
+void Obj::setName(string name) {
+  this->valName = name;
+}
