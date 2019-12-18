@@ -104,28 +104,32 @@ void Lexer:: splitOther(string s, vector<string> *tokens) {
         int index;
         index = s.find("+=");
         if (index < s.length()) {
-            tokens->push_back(s.substr(0, index));
+          tokens->push_back("obj");
+          tokens->push_back(s.substr(0, index));
             tokens->push_back("+=");
             tokens->push_back(s.substr(index + 2, s.length() - 1));
             return;
         }
         index = s.find("-=");
         if (index < s.length()) {
-            tokens->push_back(s.substr(0, index));
+          tokens->push_back("obj");
+          tokens->push_back(s.substr(0, index));
             tokens->push_back("-=");
             tokens->push_back(s.substr(index + 2, s.length() - 1));
             return;
         }
         index = s.find("*=");
         if (index < s.length()) {
-            tokens->push_back(s.substr(0, index));
+          tokens->push_back("obj");
+          tokens->push_back(s.substr(0, index));
             tokens->push_back("*=");
             tokens->push_back(s.substr(index + 2, s.length() - 1));
             return;
         }
         index = s.find("=");
         if (index < s.length()) {
-            tokens->push_back(s.substr(0, index));
+          tokens->push_back("obj");
+          tokens->push_back(s.substr(0, index));
             tokens->push_back("=");
             tokens->push_back(s.substr(index + 1, s.length() - 1));
             return;

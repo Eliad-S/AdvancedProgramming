@@ -28,8 +28,17 @@ void InterpreterFlight::parser() {
   while (index < array.size()) {
     unordered_map<string, Command *>::iterator itCommand = commandMap.find(array[index]);
     if (itCommand != commandMap.end()) {
-      Command *c = commandMap.find(array[index])->second;
-      index += c->execute(index);
+      string commandName = itCommand->first;
+      if(commandName == "openDataServer") {
+        index+=2;
+      }else {
+        if(commandName == "connectControlClient") {
+          //open client thread and wait;
+        }else {
+          Command *c = commandMap.find(array[index])->second;
+          index += c->execute(index);
+        }
+      }
     }
   }
 };
@@ -99,5 +108,5 @@ bool InterpreterFlight::getServer_Thread() {
 }
 
 bool InterpreterFlight::getClient_Thread() {
-    return this.clientThread;
+    return this->clientThread;
 }

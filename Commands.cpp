@@ -6,6 +6,8 @@
 
 #include "InterpreterFlight.h"
 #include "ex1.h"
+condition_variable cv;
+mutex m;
 
 unordered_map<string, Command *> &getCommandMap() {
     return InterpreterFlight::getInstance()->get_CommandMap();
@@ -112,7 +114,7 @@ cout << buffer <<endl;
     //and after we got the first message from the simulator we can continue compile the rest,
     // and simultaneously continuing receive massage from the simulator.
     thread threadServer(dataServerThread, client_socket);
-    threadServer.join();
+    threadServer.detach();
     return 2;
 }
 
@@ -179,8 +181,7 @@ int openControlCommand::execute(int index) {
         return -1;
     }
     string i = getArray()[index + 1];
-    char *ip;
-    strcpy(ip, i.c_str());
+    const char *ip = i.c_str();
     int port = stoi(getArray()[index + 2]);
     sockaddr_in address;
     address.sin_family = AF_INET;
@@ -328,6 +329,27 @@ int sleepCommand::execute(int index) {
     sleep(stoi(getArray()[index + 1]));
 }
 
+//need to check for this options: ++ -- /=, x = y + z, x = y - z, x = y * z,  x = y/z.
 int objCommand::execute(int index) {
-    return 0;
+  string mathSign = getArray()[index +2];
+  string expression1 = getArray()[index + 1];
+  string expresion2 = getArray()[index +3];
+  string expression = "";
+  if(mathSign == "+=") {
+    expression = expression1 + "+" + "(" + expresion2 + ")";
+  }
+  if(mathSign == "-=") {
+    expression = expression1 + "-" + "(" + expresion2 + ")";
+  }
+  if(mathSign == "*=") {
+    expression = expression1 + "*" + "(" + expresion2 + ")";
+  }
+  if(mathSign == "=") {
+    expression =  expresion2;
+  }
+
+  float value = calculateExpression(getSTObjMap(), expression);
+  unordered_map<string, Obj *>::iterator it = getSTObjMap().find(expression1);
+  it->second->setValue(value);
+  return 4;
 }

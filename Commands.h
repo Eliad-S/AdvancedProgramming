@@ -20,8 +20,7 @@
 #include <regex>
 
 using namespace std;
-condition_variable cv;
-mutex m;
+
 class Command {
 
  public:
