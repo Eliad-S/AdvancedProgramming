@@ -2,55 +2,55 @@
 // Created by eliadsellem on 12/11/19.
 //
 #include "Obj.h"
-mutex m;
+mutex m1;
 void Obj::setDirection(int d) {
   this->direction = d;
 }
 void Obj::setValue(float val) {
-    m.lock();
+    m1.lock();
   this->value = val;
-  m.unlock();
+  m1.unlock();
 }
 
 
 Obj &Obj::operator++() {
-    m.lock();
+    m1.lock();
   ++this->value;
-    m.unlock();
+    m1.unlock();
   return *this;
 }
 Obj &Obj::operator--() {
-    m.lock();
+    m1.lock();
   --this->value;
-  m.unlock();
+  m1.unlock();
   return *this;
 }
 
 Obj &Obj::operator++(int) {
-    m.lock();
+    m1.lock();
   this->value++;
-  m.unlock();
+  m1.unlock();
   return *this;
 }
 
 Obj &Obj::operator--(int) {
-    m.lock();
+    m1.lock();
   --this->value;
-  m.unlock();
+  m1.unlock();
   return *this;
 }
 
 
 Obj &Obj::operator+=(float value) {
-    m.lock();
+    m1.lock();
   this->value += value;
-  m.unlock();
+  m1.unlock();
   return *this;
 }
 Obj &Obj::operator-=(float value) {
-    m.lock();
+    m1.lock();
   this->value -= value;
-  m.unlock();
+  m1.unlock();
   return *this;
 }
 
