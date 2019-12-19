@@ -44,8 +44,8 @@ void InterpreterFlight::setCommandMap(unordered_map<string, Command *> &map) {
   map["openDataServer"] = new openDataCommand();
   map["connectControlClient"] = new openControlCommand();
   map["var"] = new varCommand();
-  map["print"] = new printCommand();
-  map["sleep"] = new sleepCommand();
+  map["Print"] = new printCommand();
+  map["Sleep"] = new sleepCommand();
   map["obj"] = new objCommand();
   map["while"] = new whileCommand();
   map["if"] = new ifCommand();

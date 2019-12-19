@@ -60,3 +60,7 @@ float Obj::calculate() {
 void Obj::setName(string name) {
   this->valName = name;
 }
+
+int Obj::getDirection() {
+    return this->direction;
+}

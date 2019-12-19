@@ -152,6 +152,7 @@ void Lexer:: splitVar(string s, vector<string> *tokens) {
         if (index < s.length()) {
             // name
             name = s.substr(0, index);
+            tokens->push_back(name);
             tokens->push_back("->");
         } else {
             index = s.find("<-");
@@ -161,11 +162,11 @@ void Lexer:: splitVar(string s, vector<string> *tokens) {
             }
             // name
             name = s.substr(0, index);
+            tokens->push_back(name);
             tokens->push_back("<-");
         }
         // sim
         string sim = removeQuotatin(s.substr(index + 6, s.length())); // check
-        tokens->push_back(name);
         tokens->push_back("sim");
         tokens->push_back(sim);
     }

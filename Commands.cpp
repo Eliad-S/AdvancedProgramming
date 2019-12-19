@@ -1,11 +1,9 @@
 //
 // Created by eliadsellem on 12/11/19.
 //
-
-
-
 #include "InterpreterFlight.h"
 #include "ex1.h"
+
 condition_variable cv;
 mutex m;
 
@@ -29,6 +27,7 @@ vector<string> &getArray() {
 bool keepRunningServerThread() {
     return InterpreterFlight::getInstance()->getKeepOpenServerThread();
 }
+
 bool keepRunningClientThread() {
     return InterpreterFlight::getInstance()->getKeepOpenClientThread();
 }
@@ -57,19 +56,19 @@ void openDataCommand::setSimulatorDetails(char buffer[], int valRead) {
     int i = 0;
     string substr = "";
     int index = details.find("\n");
-    int index2 = details.find("\n",index +1);
-    if(index2< details.length()){
+    int index2 = details.find("\n", index + 1);
+    if (index2 < details.length()) {
         i = index + 1;
     }
     map<string, Obj *>::iterator it = getSTSimulatorMap().begin();
-    for (;it!=getSTSimulatorMap().end() ;it++) {
-        if(details.find(",",i) < details.find("\n",i)) {
-            substr = details.substr(i ,details.find(",",i) - i);
+    for (; it != getSTSimulatorMap().end(); it++) {
+        if (details.find(",", i) < details.find("\n", i)) {
+            substr = details.substr(i, details.find(",", i) - i);
             float val = stof(substr);
             it->second->setValue(val);
-            i =details.find(",", i) + 1;
-        }else {
-            substr = details.substr(i,details.find("\n",i) - i);
+            i = details.find(",", i) + 1;
+        } else {
+            substr = details.substr(i, details.find("\n", i) - i);
             float val = stof(substr);
             it->second->setValue(val);
             break;
@@ -81,7 +80,7 @@ int openDataCommand::execute(int index) {
     string portS = getArray()[index + 1];
     //check if the its a number
     int port = stoi(portS);
-    char buffer[1024] = {0};
+    char buffer[791] = {0};
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
         //error
@@ -117,24 +116,24 @@ void openDataCommand::dataServerThread(int server_socket) {
     // while clientThread == true.
     while (keepRunningServerThread()) {
         sleep(3.0);
-        char buffer[1024] = {0};
-        int valRead = read(server_socket, buffer, 1024);
+        char buffer[791] = {0};
+        int valRead = read(server_socket, buffer, 791);
         //check
-cout << buffer<< endl;
+        //cout << buffer << endl;
         setSimulatorDetails(buffer, valRead);
     }
 }
 
 int varCommand::execute(int index) {
     string varName = getArray()[index + 1];
-    string simOrEqual = getArray()[index + 2];
+    string flashOrEqual = getArray()[index + 2];
+    string simOrExpression = getArray()[index + 3];
     Obj *obj;
 
     //var name ->/<- sim
-    if (simOrEqual == "sim") {
-        string direction = getArray()[index + 3];
+    if (simOrExpression == "sim") {
         string sim = getArray()[index + 4];
-        if (direction == "->") {
+        if (flashOrEqual == "->") {
             obj = new Obj(varName, sim, 1);
             getSTObjMap()[varName] = obj;
         } else {
@@ -151,7 +150,7 @@ int varCommand::execute(int index) {
         cv.notify_one();
         return 5;
     } else {
-        if (simOrEqual == "=") {
+        if (flashOrEqual == "=") {
             float value = 0;
             string expression = getArray()[index + 2];
             regex isFloat("[-]?([0-9]*[.])?[0-9]+");
@@ -187,30 +186,29 @@ int openControlCommand::execute(int index) {
         cerr << "could not connect to the simulator" << endl;
         return -2;
     }
-
-    InterpreterFlight::getInstance()->clientThread = thread ([clientSocket]() {
+    InterpreterFlight::getInstance()->clientThread = thread([clientSocket]() {
         while (keepRunningClientThread()) {
-            auto t = getSTObjMap().begin();
+            //auto t = getSTObjMap().begin();
             for (auto it = getSTObjMap().begin(); it != getSTObjMap().end(); ++it) {
                 Obj *obj = it->second;
-                string sim = obj->getSim();
-                float val = obj->getValue();
-                string massage = "set " + sim + " " + to_string(val) + "\r\n";
-                char *p;
-                strcpy(p, massage.c_str());
-                int is_send = send(clientSocket, p, strlen(p), 0);
-                if (is_send == -1) {
-
+                if (obj->getDirection() == 1) {
+                    string sim = obj->getSim();
+                    float val = obj->getValue();
+                    string massage = "set " + sim + " " + to_string(val) + "\r\n";
+                    const char *p = massage.c_str();
+                    int is_send = send(clientSocket, p, strlen(p), 0);
+                    if (is_send == -1) {
+                    }
                 }
-                unique_lock<mutex> ul(m);
-                cv.wait(ul);
             }
+            sleep(2);
+            unique_lock<mutex> ul(m);
+            cv.wait(ul);
         }
         close(clientSocket);
     });
     return 3;
 }
-
 
 
 int ifCommand::execute(int index) {
@@ -319,19 +317,27 @@ bool conditionParser::checkCondition2(string var1, string condition, string var2
 }
 
 int printCommand::execute(int index) {
-    cout << getArray()[index + 1] << endl;
+    auto obj = getSTObjMap().find(getArray()[index + 1]);
+    if (obj != getSTObjMap().end()) {
+        cout << obj->second->getValue() << endl;
+    } else {
+        cout << getArray()[index + 1] << endl;
+    }
+    return 2;
 }
 
 int sleepCommand::execute(int index) {
     sleep(stoi(getArray()[index + 1]));
+    return 2;
 }
 
 //need to check for this options: ++ -- /=, x = y + z, x = y - z, x = y * z,  x = y/z.
 int objCommand::execute(int index) {
-  string name = getArray()[index + 1];
-  string expression = getArray()[index + 3];
-  float value = calculateExpression(getSTObjMap(), expression);
-  unordered_map<string, Obj *>::iterator it = getSTObjMap().find(name);
-  it->second->setValue(value);
-  return 4;
+    string name = getArray()[index + 1];
+    string expression = getArray()[index + 3];
+    float value = calculateExpression(getSTObjMap(), expression);
+    unordered_map<string, Obj *>::iterator it = getSTObjMap().find(name);
+    it->second->setValue(value);
+    cv.notify_one();
+    return 4;
 }

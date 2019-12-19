@@ -56,5 +56,7 @@ class Obj : public Expression{
   ~Obj(){};
 
   void setName(string basic_string);
+
+    int getDirection();
 };
 #endif //ADVANCED__OBJ_H_

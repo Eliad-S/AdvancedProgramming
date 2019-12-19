@@ -142,7 +142,7 @@ vector<string> Interpreter::separateS(string s) {
     operatorPlaces[4] = s.find("(");
     operatorPlaces[5] = s.find(")");
 
-    int min = s.length() - 1;
+    int min = s.length();
     for (int i = 0; i < 6; i++) {
       if ((operatorPlaces[i] != -1) && (operatorPlaces[i] < min)) {
         min = operatorPlaces[i];
