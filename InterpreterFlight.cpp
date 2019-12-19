@@ -3,18 +3,18 @@
 //
 #include "InterpreterFlight.h"
 
-InterpreterFlight* InterpreterFlight::instance = 0;
+InterpreterFlight *InterpreterFlight::instance = 0;
 
-unordered_map<string, Command*>& InterpreterFlight::get_CommandMap() {
+unordered_map<string, Command *> &InterpreterFlight::get_CommandMap() {
   return this->commandMap;
 }
-map<string, Obj*>& InterpreterFlight :: get_STSimulatorMap() {
+map<string, Obj *> &InterpreterFlight::get_STSimulatorMap() {
   return this->STSimulatorMap;
 }
-unordered_map<string, Obj*>& InterpreterFlight::get_STObjMap() {
-  return  this->STObjMap;
+unordered_map<string, Obj *> &InterpreterFlight::get_STObjMap() {
+  return this->STObjMap;
 }
-vector<string>& InterpreterFlight::get_Array() {
+vector<string> &InterpreterFlight::get_Array() {
   return this->array;
 }
 
@@ -28,19 +28,16 @@ void InterpreterFlight::parser() {
   while (index < array.size()) {
     unordered_map<string, Command *>::iterator itCommand = commandMap.find(array[index]);
     if (itCommand != commandMap.end()) {
-      string commandName = itCommand->first;
-      if(commandName == "openDataServer") {
-        index+=2;
-      }else {
-        if(commandName == "connectControlClient") {
-          //open client thread and wait;
-        }else {
-          Command *c = commandMap.find(array[index])->second;
-          index += c->execute(index);
-        }
-      }
+      Command *c = commandMap.find(array[index])->second;
+      index += c->execute(index);
     }
   }
+
+  this->keepOpenServerThread = false;
+  this->keepOpenClientThread = false;
+  serverThread.join();
+  clientThread.join();
+
 };
 
 void InterpreterFlight::setCommandMap(unordered_map<string, Command *> &map) {
@@ -103,10 +100,11 @@ void InterpreterFlight::setSTSimulatorMap(map<string, Obj *> &map) {
   Obj *engine_rpm = new Obj("/engines/engine/rpm");
   map["engine_rpm"] = engine_rpm;
 }
-bool InterpreterFlight::getServer_Thread() {
-  return this->serverThread;
+bool InterpreterFlight::getKeepOpenServerThread() {
+  return this->keepOpenServerThread;
 }
 
-bool InterpreterFlight::getClient_Thread() {
-    return this->clientThread;
+bool InterpreterFlight::getKeepOpenClientThread() {
+  return this->keepOpenClientThread;
 }
+

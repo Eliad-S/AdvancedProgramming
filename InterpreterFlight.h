@@ -10,56 +10,55 @@
 #include <unordered_map>
 #include "Commands.h"
 
-
 using namespace std;
 
 class InterpreterFlight {
-    unordered_map<string, Command *> commandMap;
-    map<string, Obj *> STSimulatorMap;
-    unordered_map<string, Obj *> STObjMap;
-    vector<string> array;
-    static InterpreterFlight *instance;
-    bool serverThread;
-    bool clientThread;
+  unordered_map<string, Command *> commandMap;
+  map<string, Obj *> STSimulatorMap;
+  unordered_map<string, Obj *> STObjMap;
+  vector<string> array;
+  static InterpreterFlight *instance;
+  bool keepOpenServerThread;
+  bool keepOpenClientThread;
 
+  InterpreterFlight() {
+    this->commandMap = unordered_map<string, Command *>();
+    this->STSimulatorMap = map<string, Obj *>();
+    this->STObjMap = unordered_map<string, Obj *>();
+    setCommandMap(this->commandMap);
+    setSTSimulatorMap(this->STSimulatorMap);
+    this->keepOpenServerThread = true;
+    this->keepOpenClientThread = true;
+  }
 
-    InterpreterFlight() {
-        this->commandMap = unordered_map<string, Command *>();
-        this->STSimulatorMap = map<string, Obj *>();
-        this->STObjMap = unordered_map<string, Obj *>();
-        setCommandMap(this->commandMap);
-        setSTSimulatorMap(this->STSimulatorMap);
-        this->serverThread = true;
-    }
+ public:
+  thread clientThread;
+  thread serverThread;
+  static InterpreterFlight *getInstance() {
+    if (!instance)
+      instance = new InterpreterFlight();
+    return instance;
+  }
 
-public:
+  unordered_map<string, Command *> &get_CommandMap();
 
+  map<string, Obj *> &get_STSimulatorMap();
 
-    static InterpreterFlight *getInstance() {
-        if (!instance)
-            instance = new InterpreterFlight();
-        return instance;
-    }
+  unordered_map<string, Obj *> &get_STObjMap();
 
-    unordered_map<string, Command *> &get_CommandMap();
+  vector<string> &get_Array();
 
-    map<string, Obj *> &get_STSimulatorMap();
+  void setCommandMap(unordered_map<string, Command *> &map);
 
-    unordered_map<string, Obj *> &get_STObjMap();
+  void setSTSimulatorMap(map<string, Obj *> &map);
 
-    vector<string> &get_Array();
+  void setTokens(vector<string> &tokens);
 
-    void setCommandMap(unordered_map<string, Command *> &map);
+  void parser();
 
-    void setSTSimulatorMap(map<string, Obj *> &map);
+  bool getKeepOpenServerThread();
 
-    void setTokens(vector<string> &tokens);
-
-    void parser();
-
-    bool getServer_Thread();
-
-    bool getClient_Thread();
+  bool getKeepOpenClientThread();
 };
 
 #endif //ADVANCED__INTERPRETERFLIGHT_H_
