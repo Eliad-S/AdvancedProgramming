@@ -40,6 +40,7 @@ Obj &Obj::operator--(int) {
   return *this;
 }
 
+
 Obj &Obj::operator+=(float value) {
     m.lock();
   this->value += value;
