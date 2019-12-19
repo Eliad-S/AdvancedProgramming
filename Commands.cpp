@@ -80,7 +80,7 @@ int openDataCommand::execute(int index) {
     string portS = getArray()[index + 1];
     //check if the its a number
     int port = stoi(portS);
-    char buffer[1024] = {0};
+    char buffer[791] = {0};
     int socketServer = socket(AF_INET, SOCK_STREAM, 0);
     if (socketServer == -1) {
         //error
@@ -108,7 +108,7 @@ int openDataCommand::execute(int index) {
     close(socketServer);
     int valRead = read(client_socket, buffer, 1024);
 //check
-cout << buffer <<endl;
+    cout << buffer <<endl;
     setSimulatorDetails(buffer, valRead);
 
     //and after we got the first message from the simulator we can continue compile the rest,
@@ -125,7 +125,7 @@ void openDataCommand::dataServerThread(int client_socket) {
         char buffer[1024] = {0};
         int valRead = read(client_socket, buffer, 1024);
         //check
-cout << buffer<< endl;
+        cout << buffer<< endl;
         setSimulatorDetails(buffer, valRead);
     }
 }
@@ -213,8 +213,6 @@ int openControlCommand::execute(int index) {
     });
     return 3;
 }
-
-
 
 int ifCommand::execute(int index) {
     bool flag;
@@ -331,25 +329,11 @@ int sleepCommand::execute(int index) {
 
 //need to check for this options: ++ -- /=, x = y + z, x = y - z, x = y * z,  x = y/z.
 int objCommand::execute(int index) {
-  string mathSign = getArray()[index +2];
-  string expression1 = getArray()[index + 1];
-  string expresion2 = getArray()[index +3];
-  string expression = "";
-  if(mathSign == "+=") {
-    expression = expression1 + "+" + "(" + expresion2 + ")";
-  }
-  if(mathSign == "-=") {
-    expression = expression1 + "-" + "(" + expresion2 + ")";
-  }
-  if(mathSign == "*=") {
-    expression = expression1 + "*" + "(" + expresion2 + ")";
-  }
-  if(mathSign == "=") {
-    expression =  expresion2;
-  }
-
+    
+  string name = getArray()[index + 1];
+  string expression = getArray()[index + 3];
   float value = calculateExpression(getSTObjMap(), expression);
-  unordered_map<string, Obj *>::iterator it = getSTObjMap().find(expression1);
+  unordered_map<string, Obj *>::iterator it = getSTObjMap().find(name);
   it->second->setValue(value);
   return 4;
 }

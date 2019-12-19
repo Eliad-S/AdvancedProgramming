@@ -7,9 +7,6 @@ int main(int argc, char *argv[]) {
   InterpreterFlight *interpreter_flight = InterpreterFlight::getInstance();
   interpreter_flight->setTokens(lexer.token);
   interpreter_flight->parser();
-  char c[] = {'f', 'f', 'f'};
-  string s = c;
-  cout << s << endl;
 
   return 0;
 }

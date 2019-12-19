@@ -52,7 +52,6 @@ Lexer::Lexer(string fileName) {
                     string withoutSpaces =
                             removeSpace((*i).substr(5, (*i).length() - 1));
                     splitWhileOrIf(withoutSpaces, &tokens);
-                    tokens.push_back("}");
                     substr = "";
                     break;
                 }
@@ -61,7 +60,6 @@ Lexer::Lexer(string fileName) {
                     string withoutSpaces =
                             removeSpace((*i).substr(2, (*i).length() - 1));
                     splitWhileOrIf(withoutSpaces, &tokens);
-                    tokens.push_back("}");
                     substr = "";
                     break;
                 }
@@ -72,7 +70,6 @@ Lexer::Lexer(string fileName) {
                 }
                 if (substr == " " || substr == "\t") {
                     substr = "";
-                    break;
                 }
                 substr += (*i)[j];
                 if (j == (*i).length() - 1) {
@@ -100,41 +97,54 @@ string Lexer:: removeQuotatin(string str) {
         return dest;
     }
 void Lexer:: splitOther(string s, vector<string> *tokens) {
-        s = removeSpace(s);
-        int index;
-        index = s.find("+=");
-        if (index < s.length()) {
-          tokens->push_back("obj");
-          tokens->push_back(s.substr(0, index));
-            tokens->push_back("+=");
-            tokens->push_back(s.substr(index + 2, s.length() - 1));
-            return;
-        }
-        index = s.find("-=");
-        if (index < s.length()) {
-          tokens->push_back("obj");
-          tokens->push_back(s.substr(0, index));
-            tokens->push_back("-=");
-            tokens->push_back(s.substr(index + 2, s.length() - 1));
-            return;
-        }
-        index = s.find("*=");
-        if (index < s.length()) {
-          tokens->push_back("obj");
-          tokens->push_back(s.substr(0, index));
-            tokens->push_back("*=");
-            tokens->push_back(s.substr(index + 2, s.length() - 1));
-            return;
-        }
-        index = s.find("=");
-        if (index < s.length()) {
-          tokens->push_back("obj");
-          tokens->push_back(s.substr(0, index));
-            tokens->push_back("=");
-            tokens->push_back(s.substr(index + 1, s.length() - 1));
-            return;
-        }
+    tokens->push_back("obj");
+    s = removeSpace(s);
+    int index;
+    string name;
+    index = s.find("+=");
+    if (index < s.length()) {
+        name = s.substr(0, index);
+        tokens->push_back(s.substr(0, index));
+        tokens->push_back("=");
+        tokens->push_back
+                (name + "+(" + s.substr(index + 2, s.length() - 1) + ")");
+        return;
     }
+    index = s.find("-=");
+    if (index < s.length()) {
+        name = s.substr(0, index);
+        tokens->push_back(s.substr(0, index));
+        tokens->push_back("=");
+        tokens->push_back
+                (name + "-(" + s.substr(index + 2, s.length() - 1) + ")");
+        return;
+    }
+    index = s.find("*=");
+    if (index < s.length()) {
+        name = s.substr(0, index);
+        tokens->push_back(s.substr(0, index));
+        tokens->push_back("=");
+        tokens->push_back
+                (name + "*(" + s.substr(index + 2, s.length() - 1) + ")");
+        return;
+    }
+    index = s.find("/=");
+    if (index < s.length()) {
+        name = s.substr(0, index);
+        tokens->push_back(s.substr(0, index));
+        tokens->push_back("=");
+        tokens->push_back
+                (name + "/(" + s.substr(index + 2, s.length() - 1) + ")");
+        return;
+    }
+    index = s.find("=");
+    if (index < s.length()) {
+        tokens->push_back(s.substr(0, index));
+        tokens->push_back("=");
+        tokens->push_back(s.substr(index + 1, s.length() - 1));
+        return;
+    }
+}
 void Lexer:: splitVar(string s, vector<string> *tokens) {
         string name;
         tokens->push_back("var");
@@ -184,7 +194,7 @@ void Lexer:: splitSleep(string s, vector<string> *tokens) {
         tokens->push_back("Sleep");
         tokens->push_back(removeQuotatin(s));
     }
-    void Lexer:: splitWhileOrIf(string s, vector<string> *tokens) {
+void Lexer:: splitWhileOrIf(string s, vector<string> *tokens) {
         if (s[0] == '(' && s[s.length() - 1] == ')') {
             s = s.substr(1, s.length() - 2); // check
         }
