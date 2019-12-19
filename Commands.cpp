@@ -13,6 +13,7 @@ unordered_map<string, Command *> &getCommandMap() {
     return InterpreterFlight::getInstance()->get_CommandMap();
 }
 
+
 map<string, Obj *> &getSTSimulatorMap() {
     return InterpreterFlight::getInstance()->get_STSimulatorMap();
 }
