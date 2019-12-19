@@ -179,7 +179,7 @@ int openControlCommand::execute(int index) {
     int port = stoi(getArray()[index + 2]);
     sockaddr_in address;
     address.sin_family = AF_INET;
-    address.sin_addr.s_addr = inet_addr("127.0.0.1");
+    address.sin_addr.s_addr = inet_addr(ip);
     address.sin_port = htons(port);
     int isConnect = connect(clientSocket, (struct sockaddr *) &address, sizeof(address));
     if (isConnect == -1) {
