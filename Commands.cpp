@@ -186,6 +186,7 @@ int openControlCommand::execute(int index) {
         cerr << "could not connect to the simulator" << endl;
         return -2;
     }
+
     InterpreterFlight::getInstance()->clientThread = thread ([clientSocket]() {
         while (keepRunningClientThread()) {
             auto t = getSTObjMap().begin();
