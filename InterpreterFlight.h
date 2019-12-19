@@ -32,6 +32,7 @@ class InterpreterFlight {
   }
 
  public:
+  mutex mutex_;
   thread clientThread;
   thread serverThread;
   static InterpreterFlight *getInstance() {

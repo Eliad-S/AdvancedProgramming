@@ -35,9 +35,9 @@ masteravionics = 1
 brakeparking = 0
 primer = 3
 starter = 1
-autostart = 1
+autostart = 1rpm
 Print("engine is warming...")
-Print(rpm)
+Print()
 while rpm <= 750 {
 	Print(rpm)
 }
