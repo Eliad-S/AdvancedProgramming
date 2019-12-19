@@ -26,11 +26,11 @@ vector<string> &getArray() {
     return InterpreterFlight::getInstance()->get_Array();
 }
 
-bool ServerThread() {
-    return InterpreterFlight::getInstance()->getServer_Thread();
+bool keepRunningServerThread() {
+    return InterpreterFlight::getInstance()->getKeepOpenServerThread();
 }
-bool ThreadClient() {
-    return InterpreterFlight::getInstance()->getClient_Thread();
+bool keepRunningClientThread() {
+    return InterpreterFlight::getInstance()->getKeepOpenClientThread();
 }
 
 float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const string &e) {
@@ -82,8 +82,8 @@ int openDataCommand::execute(int index) {
     //check if the its a number
     int port = stoi(portS);
     char buffer[1024] = {0};
-    int socketServer = socket(AF_INET, SOCK_STREAM, 0);
-    if (socketServer == -1) {
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd == -1) {
         //error
         cerr << "could'nt open the socket" << endl;
     }
@@ -92,39 +92,33 @@ int openDataCommand::execute(int index) {
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(port);
 
-    if (bind(socketServer, (struct sockaddr *) &address, sizeof(address)) == -1) {
+    if (bind(sockfd, (struct sockaddr *) &address, sizeof(address)) == -1) {
         cerr << "could'nt bind the socket to an ip" << endl;
     }
 //making socket listen to the port
-    if (listen(socketServer, 5) == -1) {
+    if (listen(sockfd, 5) == -1) {
         cerr << "error during listening command" << endl;
     }
 //accepting a client.
-    int client_socket = accept(socketServer, (struct sockaddr *) &address, (socklen_t *) &address);
+    int server_socket = accept(sockfd, (struct sockaddr *) &address, (socklen_t *) &address);
 
-    if (client_socket == -1) {
+    if (server_socket == -1) {
         cerr << "Error accepting clinet" << endl;
     }
 
-    close(socketServer);
-    int valRead = read(client_socket, buffer, 1024);
-//check
-cout << buffer <<endl;
-    setSimulatorDetails(buffer, valRead);
-
+    close(sockfd);
     //and after we got the first message from the simulator we can continue compile the rest,
     // and simultaneously continuing receive massage from the simulator.
-    thread threadServer(dataServerThread, client_socket);
-    threadServer.detach();
+    InterpreterFlight::getInstance()->serverThread = thread(dataServerThread, server_socket);
     return 2;
 }
 
-void openDataCommand::dataServerThread(int client_socket) {
+void openDataCommand::dataServerThread(int server_socket) {
     // while clientThread == true.
-    while (ServerThread()) {
+    while (keepRunningServerThread()) {
         sleep(3.0);
         char buffer[1024] = {0};
-        int valRead = read(client_socket, buffer, 1024);
+        int valRead = read(server_socket, buffer, 1024);
         //check
 cout << buffer<< endl;
         setSimulatorDetails(buffer, valRead);
@@ -193,8 +187,9 @@ int openControlCommand::execute(int index) {
         cerr << "could not connect to the simulator" << endl;
         return -2;
     }
-    thread threadClient([clientSocket]() {
-        while (ThreadClient()) {
+
+    InterpreterFlight::getInstance()->clientThread = thread ([clientSocket]() {
+        while (keepRunningClientThread()) {
             auto t = getSTObjMap().begin();
             for (auto it = getSTObjMap().begin(); it != getSTObjMap().end(); ++it) {
                 Obj *obj = it->second;
@@ -211,6 +206,7 @@ int openControlCommand::execute(int index) {
                 cv.wait(ul);
             }
         }
+        close(clientSocket);
     });
     return 3;
 }

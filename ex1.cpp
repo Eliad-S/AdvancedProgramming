@@ -162,7 +162,7 @@ vector<string> Interpreter::separateS(string s) {
         token = "p";
       } else {
         if (s.substr(0, min).compare("-") == 0) {
-          token = "m";
+          token = "m1";
         } else {
           token = s.substr(0, min);
         }
