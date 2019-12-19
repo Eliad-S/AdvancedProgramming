@@ -331,25 +331,10 @@ int sleepCommand::execute(int index) {
 
 //need to check for this options: ++ -- /=, x = y + z, x = y - z, x = y * z,  x = y/z.
 int objCommand::execute(int index) {
-  string mathSign = getArray()[index +2];
-  string expression1 = getArray()[index + 1];
-  string expresion2 = getArray()[index +3];
-  string expression = "";
-  if(mathSign == "+=") {
-    expression = expression1 + "+" + "(" + expresion2 + ")";
-  }
-  if(mathSign == "-=") {
-    expression = expression1 + "-" + "(" + expresion2 + ")";
-  }
-  if(mathSign == "*=") {
-    expression = expression1 + "*" + "(" + expresion2 + ")";
-  }
-  if(mathSign == "=") {
-    expression =  expresion2;
-  }
-
+  string name = getArray()[index + 1];
+  string expression = getArray()[index + 3];
   float value = calculateExpression(getSTObjMap(), expression);
-  unordered_map<string, Obj *>::iterator it = getSTObjMap().find(expression1);
+  unordered_map<string, Obj *>::iterator it = getSTObjMap().find(name);
   it->second->setValue(value);
   return 4;
 }
