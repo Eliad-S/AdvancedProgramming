@@ -271,7 +271,7 @@ int whileCommand::execute(int index) {
             counter1 = 3;
             while (getArray()[index + counter1] != "}") {
                 Command *c = getCommandMap().find(getArray()[index + counter1])->second;
-                counter1 += c->execute(index);
+                counter1 += c->execute(index + counter1);
             }
         }
     } else {
