@@ -253,7 +253,7 @@ int whileCommand::execute(int index) {
         flag = checkCondition1(v1);
         whichCondition = 1;
     } else {
-        counter1 = 4;
+        counter1 = 5;
         v3 = getArray()[index + 3];
         flag = checkCondition2(v1, v2, v3);
         whichCondition = 2;
@@ -262,7 +262,6 @@ int whileCommand::execute(int index) {
     while (getArray()[index + counter2] != "}") {
         counter2++;
     }
-    counter2++;
     if (!flag) {
         return counter2;
     }
