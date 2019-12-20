@@ -11,7 +11,6 @@ unordered_map<string, Command *> &getCommandMap() {
     return InterpreterFlight::getInstance()->get_CommandMap();
 }
 
-
 map<string, Obj *> &getSTSimulatorMap() {
     return InterpreterFlight::getInstance()->get_STSimulatorMap();
 }
@@ -152,12 +151,11 @@ int varCommand::execute(int index) {
     } else {
         if (flashOrEqual == "=") {
             float value = 0;
-            string expression = getArray()[index + 2];
             regex isFloat("[-]?([0-9]*[.])?[0-9]+");
-            if (regex_match(expression, isFloat)) {
-                value = stof(expression);
+            if (regex_match(simOrExpression, isFloat)) {
+                value = stof(simOrExpression);
             } else {
-                value = calculateExpression(getSTObjMap(), expression);
+                value = calculateExpression(getSTObjMap(), simOrExpression);
             }
             obj = new Obj(varName, value);
             getSTObjMap()[varName] = obj;

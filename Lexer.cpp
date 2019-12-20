@@ -37,13 +37,13 @@ Lexer::Lexer(string fileName) {
                 }
                 if (substr == "Sleep") {
                     string withoutSpaces =
-                            removeSpace((*i).substr(5, (*i).length() - 1));
+                            removeSpace((*i).substr(j, (*i).length() - 1));
                     splitSleep(withoutSpaces, &tokens);
                     substr = "";
                     break;
                 }
                 if (substr == "Print") {
-                    splitPrint((*i).substr(5, (*i).length() - 1), &tokens);
+                    splitPrint((*i).substr(j, (*i).length() - 1), &tokens);
                     substr = "";
                     break;
                 }
@@ -146,8 +146,8 @@ void Lexer:: splitOther(string s, vector<string> *tokens) {
     }
 }
 void Lexer:: splitVar(string s, vector<string> *tokens) {
-        string name;
         tokens->push_back("var");
+        string name;
         int index = s.find("->");
         if (index < s.length()) {
             // name
@@ -157,13 +157,19 @@ void Lexer:: splitVar(string s, vector<string> *tokens) {
         } else {
             index = s.find("<-");
             if (index >= s.length())  {
-                splitOther(s, tokens);
+                index = s.find("=");
+                if (index < s.length()) {
+                    tokens->push_back(s.substr(0, index));
+                    tokens->push_back("=");
+                    tokens->push_back(s.substr(index + 1, s.length() - 1));
+                }
                 return;
+            } else {
+                // name
+                name = s.substr(0, index);
+                tokens->push_back(name);
+                tokens->push_back("<-");
             }
-            // name
-            name = s.substr(0, index);
-            tokens->push_back(name);
-            tokens->push_back("<-");
         }
         // sim
         string sim = removeQuotatin(s.substr(index + 6, s.length())); // check
@@ -205,7 +211,7 @@ void Lexer:: splitWhileOrIf(string s, vector<string> *tokens) {
         if (index < s.length()) {
             tokens->push_back(s.substr(0, index));
             tokens->push_back("==");
-            tokens->push_back(s.substr(index + 2, s.length() - 2-index-1));
+            tokens->push_back(s.substr(index + 2, s.length() - index - 2));
             cout << s << " " << s.length() << endl;
             goto end;
         }
@@ -213,28 +219,28 @@ void Lexer:: splitWhileOrIf(string s, vector<string> *tokens) {
         if (index < s.length()) {
             tokens->push_back(s.substr(0, index));
             tokens->push_back("<=");
-            tokens->push_back(s.substr(index + 2, s.length() - 2-index-1));
+            tokens->push_back(s.substr(index + 2, s.length() - index - 2));
             goto end;
         }
         index = s.find(">=");
         if (index < s.length()) {
             tokens->push_back(s.substr(0, index));
             tokens->push_back(">=");
-            tokens->push_back(s.substr(index + 2, s.length() - 2-index-1));
+            tokens->push_back(s.substr(index + 2, s.length() - index - 2));
             goto end;
         }
         index = s.find(">");
         if (index < s.length()) {
             tokens->push_back(s.substr(0, index));
             tokens->push_back(">");
-            tokens->push_back(s.substr(index + 1, s.length() - 2-index-1));
+            tokens->push_back(s.substr(index + 1, s.length() - index - 2));
             goto end;
         }
         index = s.find("<");
         if (index < s.length()) {
             tokens->push_back(s.substr(0, index));
             tokens->push_back("<");
-            tokens->push_back(s.substr(index + 1, s.length() - 2-index-1));
+            tokens->push_back(s.substr(index + 1, s.length() - index - 2));
             goto end;
         } else {
             tokens->push_back(s.substr(0, s.length() - 2));
