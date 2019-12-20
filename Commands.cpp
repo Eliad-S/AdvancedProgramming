@@ -115,12 +115,14 @@ int openDataCommand::execute(int index) {
 void openDataCommand::dataServerThread(int server_socket) {
     // while clientThread == true.
     while (keepRunningServerThread()) {
+        InterpreterFlight::getInstance()->mutex_.lock();
         sleep(3.0);
         char buffer[791] = {0};
         int valRead = read(server_socket, buffer, 791);
         //check
         //cout << buffer << endl;
         setSimulatorDetails(buffer, valRead);
+        InterpreterFlight::getInstance()->mutex_.unlock();
     }
 }
 
@@ -188,7 +190,7 @@ int openControlCommand::execute(int index) {
     }
     InterpreterFlight::getInstance()->clientThread = thread([clientSocket]() {
         while (keepRunningClientThread()) {
-            //auto t = getSTObjMap().begin();
+            InterpreterFlight::getInstance()->mutex_.lock();
             for (auto it = getSTObjMap().begin(); it != getSTObjMap().end(); ++it) {
                 Obj *obj = it->second;
                 if (obj->getDirection() == 1) {
@@ -199,9 +201,9 @@ int openControlCommand::execute(int index) {
                     int is_send = send(clientSocket, p, strlen(p), 0);
                     if (is_send == -1) {
                     }
+                    InterpreterFlight::getInstance()->mutex_.unlock();
                 }
             }
-            sleep(2);
             unique_lock<mutex> ul(m);
             cv.wait(ul);
         }
