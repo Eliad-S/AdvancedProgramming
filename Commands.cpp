@@ -154,7 +154,7 @@ int varCommand::execute(int index) {
     } else {
         if (flashOrEqual == "=") {
             float value = 0;
-            string expression = getArray()[index + 2];
+            string expression = getArray()[index + 3];
             regex isFloat("[-]?([0-9]*[.])?[0-9]+");
             if (regex_match(expression, isFloat)) {
                 value = stof(expression);
@@ -234,7 +234,7 @@ int ifCommand::execute(int index) {
     } else {
         while (getArray()[index + counter] != "}") {
             Command *c = getCommandMap().find(getArray()[index + counter])->second;
-            counter += c->execute(index);
+            counter += c->execute(index + counter);
         }
     }
     return counter;
@@ -279,7 +279,7 @@ int whileCommand::execute(int index) {
             counter1 = 5;
             while (getArray()[index + counter1] != "}") {
                 Command *c = getCommandMap().find(getArray()[index + counter1])->second;
-                counter1 += c->execute(index);
+                counter1 += c->execute(index + counter1);
             }
         }
     }
