@@ -62,7 +62,7 @@ void InterpreterFlight::setSTSimulatorMap(map<string, Obj *> &map) {
   map["time_warp"] = time_warp;
   Obj *switches_magnetos = new Obj("/controls/switches/magnetos");
   map["switches_magnetos"] = switches_magnetos;
-  Obj *heading_indicator_offset_deg = new Obj("//instrumentation/heading-indicator/offset-deg");
+  Obj *heading_indicator_offset_deg = new Obj("/instrumentation/heading-indicator/offset-deg");
   map["heading_indicator_offset_deg"] = heading_indicator_offset_deg;
   Obj *altimeter_indicated_altitude_ft = new Obj("/instrumentation/altimeter/indicated-altitude-ft");
   map["altimeter_indicated_altitude_ft"] = altimeter_indicated_altitude_ft;
@@ -115,6 +115,8 @@ void InterpreterFlight::setSTSimulatorMap(map<string, Obj *> &map) {
   map["switches_starter"] = switches_starter;
   Obj *active_engine_auto_start = new Obj("/engines/active-engine/auto-start");
   map["active_engine_auto_start"] = active_engine_auto_start;
+  Obj* flight_speedbrake =new Obj("/controls/flight/speedbrake");
+  map["flight_speedbrake"] = flight_speedbrake;
   Obj *c172p_brake_parking = new Obj("/sim/model/c172p/brake-parking");
   map["c172p_brake_parking"] = c172p_brake_parking;
   Obj *engine_primer = new Obj("/controls/engines/engine/primer");
