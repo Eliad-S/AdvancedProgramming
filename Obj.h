@@ -15,6 +15,7 @@ class Obj : public Expression{
   float value = 0;
   string sim;
   int direction = 0;
+  mutex m1;
 
  public:
   Obj(const string s) {
