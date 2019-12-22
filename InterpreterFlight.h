@@ -60,6 +60,7 @@ class InterpreterFlight {
   bool getKeepOpenServerThread();
 
   bool getKeepOpenClientThread();
+  void setSTObjMap(string basic_string, Obj *p_obj);
 };
 
 #endif //ADVANCED__INTERPRETERFLIGHT_H_

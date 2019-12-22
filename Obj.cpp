@@ -2,55 +2,45 @@
 // Created by eliadsellem on 12/11/19.
 //
 #include "Obj.h"
+#include "InterpreterFlight.h"
 mutex m1;
 void Obj::setDirection(int d) {
   this->direction = d;
 }
 void Obj::setValue(float val) {
-    m1.lock();
+  InterpreterFlight::getInstance()->mutex_.lock();
   this->value = val;
-  m1.unlock();
+  InterpreterFlight::getInstance()->mutex_.unlock();
+
 }
 
 
 Obj &Obj::operator++() {
-    m1.lock();
   ++this->value;
-    m1.unlock();
   return *this;
 }
 Obj &Obj::operator--() {
-    m1.lock();
   --this->value;
-  m1.unlock();
   return *this;
 }
 
 Obj &Obj::operator++(int) {
-    m1.lock();
   this->value++;
-  m1.unlock();
   return *this;
 }
 
 Obj &Obj::operator--(int) {
-    m1.lock();
   --this->value;
-  m1.unlock();
   return *this;
 }
 
 
 Obj &Obj::operator+=(float value) {
-    m1.lock();
   this->value += value;
-  m1.unlock();
   return *this;
 }
 Obj &Obj::operator-=(float value) {
-    m1.lock();
   this->value -= value;
-  m1.unlock();
   return *this;
 }
 
@@ -58,9 +48,12 @@ float Obj::calculate() {
   return this->value;
 }
 void Obj::setName(string name) {
+  InterpreterFlight::getInstance()->mutex_.lock();
   this->valName = name;
+  InterpreterFlight::getInstance()->mutex_.unlock();
 }
 
 int Obj::getDirection() {
-    return this->direction;
+  return this->direction;
+
 }
