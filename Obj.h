@@ -59,5 +59,6 @@ class Obj : public Expression{
   void setName(string basic_string);
 
     int getDirection();
+  void setSim(string basic_string);
 };
 #endif //ADVANCED__OBJ_H_

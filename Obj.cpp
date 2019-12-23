@@ -5,7 +5,9 @@
 #include "InterpreterFlight.h"
 
 void Obj::setDirection(int d) {
+  InterpreterFlight::getInstance()->mutex_.lock();
   this->direction = d;
+  InterpreterFlight::getInstance()->mutex_.unlock();
 }
 void Obj::setValue(float val) {
     m1.lock();
@@ -50,4 +52,9 @@ void Obj::setName(string name) {
 
 int Obj::getDirection() {
     return this->direction;
+}
+void Obj::setSim(string newSim) {
+  InterpreterFlight::getInstance()->mutex_.lock();
+  this->sim = newSim;
+  InterpreterFlight::getInstance()->mutex_.unlock();
 }

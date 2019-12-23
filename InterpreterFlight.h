@@ -14,9 +14,10 @@ using namespace std;
 
 class InterpreterFlight {
   unordered_map<string, Command *> commandMap;
-  map<string, Obj *> STSimulatorMap;
+  unordered_map<string, Obj *> STSimulatorMap;
   unordered_map<string, Obj *> STObjMap;
   vector<string> array;
+  queue<string> simToUpdate;
   static InterpreterFlight *instance;
   bool keepOpenServerThread;
   bool keepOpenClientThread;
@@ -24,7 +25,7 @@ class InterpreterFlight {
 
   InterpreterFlight() {
     this->commandMap = unordered_map<string, Command *>();
-    this->STSimulatorMap = map<string, Obj *>();
+    this->STSimulatorMap = unordered_map<string, Obj *>();
     this->STObjMap = unordered_map<string, Obj *>();
     setCommandMap(this->commandMap);
     setSTSimulatorMap(this->STSimulatorMap);
@@ -35,6 +36,7 @@ class InterpreterFlight {
 
  public:
   mutex mutex_;
+  mutex queueLock;
   thread clientThread;
   thread serverThread;
   static InterpreterFlight *getInstance() {
@@ -45,7 +47,7 @@ class InterpreterFlight {
 
   unordered_map<string, Command *> &get_CommandMap();
 
-  map<string, Obj *> &get_STSimulatorMap();
+  unordered_map<string, Obj *> &get_STSimulatorMap();
 
   unordered_map<string, Obj *> &get_STObjMap();
 
@@ -53,7 +55,7 @@ class InterpreterFlight {
 
   void setCommandMap(unordered_map<string, Command *> &map);
 
-  void setSTSimulatorMap(map<string, Obj *> &map);
+  void setSTSimulatorMap(unordered_map<string, Obj *> &map);
 
   void setTokens(vector<string> &tokens);
 
@@ -67,6 +69,9 @@ class InterpreterFlight {
   void setSimArray();
   string getIndexOfArray(int index);
   Obj* get_STSimulatorObjBySim(string sim);
+
+  void pushQueue(Obj *obj);
+  queue<string> getQueue();
 };
 
 #endif //ADVANCED__INTERPRETERFLIGHT_H_
