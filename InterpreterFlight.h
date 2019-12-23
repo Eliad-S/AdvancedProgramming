@@ -9,7 +9,6 @@
 #include <fstream>
 #include <unordered_map>
 #include "Commands.h"
-
 using namespace std;
 
 class InterpreterFlight {
@@ -17,16 +16,13 @@ class InterpreterFlight {
   unordered_map<string, Obj *> STSimulatorMap;
   unordered_map<string, Obj *> STObjMap;
   vector<string> array;
-  queue<string> simToUpdate;
+  queue<Obj*> objToUpdate;
   static InterpreterFlight *instance;
   bool keepOpenServerThread;
   bool keepOpenClientThread;
   string sims[36];
 
   InterpreterFlight() {
-    this->commandMap = unordered_map<string, Command *>();
-    this->STSimulatorMap = unordered_map<string, Obj *>();
-    this->STObjMap = unordered_map<string, Obj *>();
     setCommandMap(this->commandMap);
     setSTSimulatorMap(this->STSimulatorMap);
     this->keepOpenServerThread = true;
@@ -71,7 +67,7 @@ class InterpreterFlight {
   Obj* get_STSimulatorObjBySim(string sim);
 
   void pushQueue(Obj *obj);
-  queue<string> getQueue();
+  queue<Obj*> getQueue();
 };
 
 #endif //ADVANCED__INTERPRETERFLIGHT_H_

@@ -2,7 +2,6 @@
 // Created by eliadsellem on 12/10/19.
 //
 #include "InterpreterFlight.h"
-#include "Commands.h"
 
 InterpreterFlight *InterpreterFlight::instance = 0;
 
@@ -196,14 +195,10 @@ Obj *InterpreterFlight::get_STSimulatorObjBySim(string sim) {
   }
 }
 void InterpreterFlight::pushQueue(Obj *obj) {
-  InterpreterFlight::getInstance()->mutex_.lock();
-  string sim = obj->getSim();
-  float val = obj->getValue();
-  string simUpdate = "set " + sim + " " + to_string(val) + "\r\n";
-  simToUpdate.push(simUpdate);
-  InterpreterFlight::getInstance()->mutex_.unlock();
-
+  this->objToUpdate.push(obj);
 }
-queue<string> InterpreterFlight::getQueue() {
-  return simToUpdate;
+
+
+queue<Obj*> InterpreterFlight::getQueue() {
+  return this->objToUpdate;
 }

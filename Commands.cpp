@@ -58,7 +58,10 @@ void openDataCommand::setSimulatorDetails(char buffer[], int valRead) {
   int counter = 0;
   for (float f: args) {
     string sim = InterpreterFlight::getInstance()->getIndexOfArray(counter);
-    InterpreterFlight::getInstance()->get_STSimulatorObjBySim(sim)->setValue(f);
+    Obj *obj = InterpreterFlight::getInstance()->get_STSimulatorObjBySim(sim);
+    if (!obj->getValueChanged()) {
+      obj->setValue(f);
+    }
     counter++;
   }
 }
@@ -118,13 +121,11 @@ vector<float> openDataCommand::splitArgs(string details) {
       substr = details.substr(pos, details.find(","));
       float val = stof(substr);
       args.push_back(val);
-//      cout<< "var num " << j<< ": " << substr<<endl;
       details = details.substr(details.find(",") + 1);
     } else {
       substr = details.substr(pos, details.find("\n"));
       float val = stof(substr);
       args.push_back(val);
-//      cout << "var num " << j << ": " << substr << endl;
       break;
     }
   }
@@ -204,16 +205,15 @@ int openControlCommand::execute(int index) {
   }
   InterpreterFlight::getInstance()->clientThread = thread([clientSocket]() {
     while (keepRunningClientThread()) {
-      queue<string> simToUpdate = InterpreterFlight::getInstance()->getQueue();
-      while (!simToUpdate.empty()) {
-        string message = simToUpdate.front();
+      queue<Obj *> objToUpdate = InterpreterFlight::getInstance()->getQueue();
+      while (!objToUpdate.empty()) {
+        string message = objToUpdate.front()->createSetSim();
+        objToUpdate.front()->setValueChanged(false);
         const char *p = message.c_str();
         int is_send = send(clientSocket, p, strlen(p), 0);
         if (is_send == -1) {
         }
-        InterpreterFlight::getInstance()->mutex_.lock();
-        simToUpdate.pop();
-        InterpreterFlight::getInstance()->mutex_.unlock();
+        objToUpdate.pop();
       }
       unique_lock<mutex> ul(m);
       cv.wait(ul);
@@ -353,6 +353,7 @@ int objCommand::execute(int index) {
   unordered_map<string, Obj *>::iterator it = getSTObjMap().find(name);
   it->second->setValue(value);
   if (it->second->getDirection() == 1) {
+    it->second->setValueChanged(true);
     InterpreterFlight::getInstance()->pushQueue(it->second);
     cv.notify_one();
   }
