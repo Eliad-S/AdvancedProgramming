@@ -10,7 +10,7 @@ unordered_map<string, Command *> &InterpreterFlight::get_CommandMap() {
   return this->commandMap;
 }
 
-map<string, Obj *> &InterpreterFlight::get_STSimulatorMap() {
+unordered_map<string, Obj *> &InterpreterFlight::get_STSimulatorMap() {
   return this->STSimulatorMap;
 }
 
@@ -55,7 +55,7 @@ void InterpreterFlight::setCommandMap(unordered_map<string, Command *> &map) {
   map["if"] = new ifCommand();
 }
 
-void InterpreterFlight::setSTSimulatorMap(map<string, Obj *> &map) {
+void InterpreterFlight::setSTSimulatorMap(unordered_map<string, Obj *> &map) {
   Obj *airspeed_indicator_indicated_speed_kt = new Obj("/instrumentation/airspeed-indicator/indicated-speed-kt");
   map["airspeed_indicator_indicated_speed_kt"] = airspeed_indicator_indicated_speed_kt;
   Obj *time_warp = new Obj("/sim/time/warp");
@@ -115,7 +115,7 @@ void InterpreterFlight::setSTSimulatorMap(map<string, Obj *> &map) {
   map["switches_starter"] = switches_starter;
   Obj *active_engine_auto_start = new Obj("/engines/active-engine/auto-start");
   map["active_engine_auto_start"] = active_engine_auto_start;
-  Obj* flight_speedbrake =new Obj("/controls/flight/speedbrake");
+  Obj *flight_speedbrake = new Obj("/controls/flight/speedbrake");
   map["flight_speedbrake"] = flight_speedbrake;
   Obj *c172p_brake_parking = new Obj("/sim/model/c172p/brake-parking");
   map["c172p_brake_parking"] = c172p_brake_parking;
@@ -183,17 +183,27 @@ void InterpreterFlight::setSTObjMap(string varName, Obj *obj) {
   InterpreterFlight::getInstance()->mutex_.unlock();
 }
 
-
-
 string InterpreterFlight::getIndexOfArray(int index) {
   return sims[index];
 }
 
-Obj* InterpreterFlight::get_STSimulatorObjBySim(string sim) {
-  map<string, Obj *>::iterator it = STSimulatorMap.begin();
+Obj *InterpreterFlight::get_STSimulatorObjBySim(string sim) {
+  unordered_map<string, Obj *>::iterator it = STSimulatorMap.begin();
   for (; it != STSimulatorMap.end(); it++) {
     if (it->second->getSim() == sim) {
       return it->second;
     }
   }
+}
+void InterpreterFlight::pushQueue(Obj *obj) {
+  InterpreterFlight::getInstance()->mutex_.lock();
+  string sim = obj->getSim();
+  float val = obj->getValue();
+  string simUpdate = "set " + sim + " " + to_string(val) + "\r\n";
+  simToUpdate.push(simUpdate);
+  InterpreterFlight::getInstance()->mutex_.unlock();
+
+}
+queue<string> InterpreterFlight::getQueue() {
+  return simToUpdate;
 }

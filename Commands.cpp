@@ -11,7 +11,7 @@ unordered_map<string, Command *> &getCommandMap() {
   return InterpreterFlight::getInstance()->get_CommandMap();
 }
 
-map<string, Obj *> &getSTSimulatorMap() {
+unordered_map<string, Obj *> &getSTSimulatorMap() {
   return InterpreterFlight::getInstance()->get_STSimulatorMap();
 }
 
@@ -53,15 +53,14 @@ float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const
 void openDataCommand::setSimulatorDetails(char buffer[], int valRead) {
   string details = buffer;
   string substr = "";
-  map<string, Obj *>::iterator it = getSTSimulatorMap().begin();
+  unordered_map<string, Obj *>::iterator it = getSTSimulatorMap().begin();
   vector<float> args = splitArgs(details);
   int counter = 0;
-  for(float f: args) {
+  for (float f: args) {
     string sim = InterpreterFlight::getInstance()->getIndexOfArray(counter);
     InterpreterFlight::getInstance()->get_STSimulatorObjBySim(sim)->setValue(f);
     counter++;
   }
-  cout << "counter:" << counter << endl;
 }
 
 int openDataCommand::execute(int index) {
@@ -111,10 +110,10 @@ void openDataCommand::dataServerThread(int server_socket) {
   }
 }
 vector<float> openDataCommand::splitArgs(string details) {
-  vector <float> args;
+  vector<float> args;
   int pos = 0;
   string substr = "";
-  for(int j =0; j<36; j++) {
+  for (int j = 0; j < 36; j++) {
     if (details.find(",") < details.find("\n")) {
       substr = details.substr(pos, details.find(","));
       float val = stof(substr);
@@ -134,47 +133,52 @@ vector<float> openDataCommand::splitArgs(string details) {
 }
 
 int varCommand::execute(int index) {
-  cout<< "varrrr" <<endl;
   string varName = getArray()[index + 1];
   string flashOrEqual = getArray()[index + 2];
   string simOrExpression = getArray()[index + 3];
   Obj *obj;
 
   //var name ->/<- sim
-//  InterpreterFlight::getInstance()->mutex_.lock();
   if (simOrExpression == "sim") {
+    int flag = 0;
     string sim = getArray()[index + 4];
-    if (flashOrEqual == "->") {
-      obj = new Obj(varName, sim, 1);
-      InterpreterFlight::getInstance()->setSTObjMap(varName, obj);
-    } else {
-      map<string, Obj *>::iterator it;
-      for (it = getSTSimulatorMap().begin(); it != getSTSimulatorMap().end(); it++) {
-        obj = it->second;
-        if (obj->getSim() == sim) {
-          obj->setName(varName);
-          InterpreterFlight::getInstance()->setSTObjMap(varName, obj);
-          break;
-        }
+    unordered_map<string, Obj *>::iterator it;
+    //check if the obj exist in STSimulatorMap.
+    for (it = getSTSimulatorMap().begin(); it != getSTSimulatorMap().end(); it++) {
+      obj = it->second;
+      if (obj->getSim() == sim) {
+        flag = 1;
+        break;
       }
     }
-//    InterpreterFlight::getInstance()->mutex_.unlock();
-    cv.notify_one();
+    if (flashOrEqual == "->") {
+      if (flag == 1) {
+        obj->setDirection(1);
+        obj->setName(varName);
+      } else {
+        obj = new Obj(varName, sim, 1);
+      }
+    } else {
+      if (flag == 1) {
+        obj->setDirection(-1);
+        obj->setName(varName);
+      } else {
+        obj = new Obj(varName, sim, -1);
+      }
+    }
+    InterpreterFlight::getInstance()->setSTObjMap(varName, obj);
     return 5;
   } else {
-    cout<< "varrrr without sim " <<endl;
 
     if (flashOrEqual == "=") {
       float value = 0;
       string expression = getArray()[index + 2];
       value = calculateExpression(getSTObjMap(), expression);
-      cout<< "succeed calculating " <<endl;
+      cout << "succeed calculating " << endl;
       obj = new Obj(varName, value);
       InterpreterFlight::getInstance()->setSTObjMap(varName, obj);
 
     }
-//    InterpreterFlight::getInstance()->mutex_.unlock();
-    cv.notify_one();
     return 4;
   }
 }
@@ -200,20 +204,17 @@ int openControlCommand::execute(int index) {
   }
   InterpreterFlight::getInstance()->clientThread = thread([clientSocket]() {
     while (keepRunningClientThread()) {
-//      InterpreterFlight::getInstance()->mutex_.lock();
-      for (auto it = getSTObjMap().begin(); it != getSTObjMap().end(); ++it) {
-        Obj *obj = it->second;
-        if (obj->getDirection() == 1) {
-          string sim = obj->getSim();
-          float val = obj->getValue();
-          string massage = "set " + sim + " " + to_string(val) + "\r\n";
-          const char *p = massage.c_str();
-          int is_send = send(clientSocket, p, strlen(p), 0);
-          if (is_send == -1) {
-          }
+      queue<string> simToUpdate = InterpreterFlight::getInstance()->getQueue();
+      while (!simToUpdate.empty()) {
+        string message = simToUpdate.front();
+        const char *p = message.c_str();
+        int is_send = send(clientSocket, p, strlen(p), 0);
+        if (is_send == -1) {
         }
+        InterpreterFlight::getInstance()->mutex_.lock();
+        simToUpdate.pop();
+        InterpreterFlight::getInstance()->mutex_.unlock();
       }
-//      InterpreterFlight::getInstance()->mutex_.unlock();
       unique_lock<mutex> ul(m);
       cv.wait(ul);
     }
@@ -351,6 +352,9 @@ int objCommand::execute(int index) {
   float value = calculateExpression(getSTObjMap(), expression);
   unordered_map<string, Obj *>::iterator it = getSTObjMap().find(name);
   it->second->setValue(value);
-  cv.notify_one();
+  if (it->second->getDirection() == 1) {
+    InterpreterFlight::getInstance()->pushQueue(it->second);
+    cv.notify_one();
+  }
   return 4;
 }
