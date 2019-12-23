@@ -36,6 +36,7 @@ class openDataCommand : public Command {
 public:
   static void dataServerThread(int client_socket);
   static void setSimulatorDetails(char buffer[], int valRead);
+  static vector<float> splitArgs(string basic_string);
 };
 
 class openControlCommand : public Command {

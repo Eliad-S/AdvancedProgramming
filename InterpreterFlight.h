@@ -20,6 +20,7 @@ class InterpreterFlight {
   static InterpreterFlight *instance;
   bool keepOpenServerThread;
   bool keepOpenClientThread;
+  string sims[36];
 
   InterpreterFlight() {
     this->commandMap = unordered_map<string, Command *>();
@@ -29,6 +30,7 @@ class InterpreterFlight {
     setSTSimulatorMap(this->STSimulatorMap);
     this->keepOpenServerThread = true;
     this->keepOpenClientThread = true;
+    setSimArray();
   }
 
  public:
@@ -61,6 +63,10 @@ class InterpreterFlight {
 
   bool getKeepOpenClientThread();
   void setSTObjMap(string basic_string, Obj *p_obj);
+
+  void setSimArray();
+  string getIndexOfArray(int index);
+  Obj* get_STSimulatorObjBySim(string sim);
 };
 
 #endif //ADVANCED__INTERPRETERFLIGHT_H_
