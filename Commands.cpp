@@ -52,32 +52,14 @@ float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const
 
 void openDataCommand::setSimulatorDetails(char buffer[], int valRead) {
   string details = buffer;
-  int i = 0;
   string substr = "";
   map<string, Obj *>::iterator it = getSTSimulatorMap().begin();
-
-  int index = details.find("\n");
-  int index2 = details.find("\n", index + 1);
-  if (index2 < details.length()) {
-    i = index + 1;
-  }
+  vector<float> args = splitArgs(details);
   int counter = 0;
-  for (; it != getSTSimulatorMap().end(); it++) {
-    if (details.find(",", i) < details.find("\n", i)) {
-      substr = details.substr(i, details.find(",", i) - i);
-      float val = stof(substr);
-      it->second->setValue(val);
-      counter++;
-      cout<< "var num " << counter<< ": " << substr<<endl;
-      i = details.find(",", i) + 1;
-    } else {
-      substr = details.substr(i, details.find("\n", i) - i);
-      float val = stof(substr);
-      it->second->setValue(val);
-      counter++;
-      cout<< "var num " << counter<< ": " << substr<<endl;
-      break;
-    }
+  for(float f: args) {
+    string sim = InterpreterFlight::getInstance()->getIndexOfArray(counter);
+    InterpreterFlight::getInstance()->get_STSimulatorObjBySim(sim)->setValue(f);
+    counter++;
   }
   cout << "counter:" << counter << endl;
 }
@@ -124,9 +106,31 @@ void openDataCommand::dataServerThread(int server_socket) {
     char buffer[1500] = {0};
     int valRead = read(server_socket, buffer, 1500);
     //check
-    cout << buffer << endl;
+//    cout << buffer << endl;
     setSimulatorDetails(buffer, valRead);
   }
+}
+vector<float> openDataCommand::splitArgs(string details) {
+  vector <float> args;
+  int pos = 0;
+  string substr = "";
+  for(int j =0; j<36; j++) {
+    if (details.find(",") < details.find("\n")) {
+      substr = details.substr(pos, details.find(","));
+      float val = stof(substr);
+      args.push_back(val);
+//      cout<< "var num " << j<< ": " << substr<<endl;
+      details = details.substr(details.find(",") + 1);
+    } else {
+      substr = details.substr(pos, details.find("\n"));
+      float val = stof(substr);
+      args.push_back(val);
+//      cout << "var num " << j << ": " << substr << endl;
+      break;
+    }
+  }
+
+  return args;
 }
 
 int varCommand::execute(int index) {
@@ -347,5 +351,6 @@ int objCommand::execute(int index) {
   float value = calculateExpression(getSTObjMap(), expression);
   unordered_map<string, Obj *>::iterator it = getSTObjMap().find(name);
   it->second->setValue(value);
+  cv.notify_one();
   return 4;
 }

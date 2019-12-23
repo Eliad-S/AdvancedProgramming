@@ -131,6 +131,45 @@ void InterpreterFlight::setSTSimulatorMap(map<string, Obj *> &map) {
   map["engine_rpm"] = engine_rpm;
 }
 
+void InterpreterFlight::setSimArray() {
+  sims[0] = "/instrumentation/airspeed-indicator/indicated-speed-kt";
+  sims[1] = "/sim/time/warp";
+  sims[2] = "/controls/switches/magnetos";
+  sims[3] = "/instrumentation/heading-indicator/offset-deg";
+  sims[4] = "/instrumentation/altimeter/indicated-altitude-ft";
+  sims[5] = "/instrumentation/altimeter/pressure-alt-ft";
+  sims[6] = "/instrumentation/attitude-indicator/indicated-pitch-deg";
+  sims[7] = "/instrumentation/attitude-indicator/indicated-roll-deg";
+  sims[8] = "/instrumentation/attitude-indicator/internal-pitch-deg";
+  sims[9] = "/instrumentation/attitude-indicator/internal-roll-deg";
+  sims[10] = "/instrumentation/encoder/indicated-altitude-ft";
+  sims[11] = "/instrumentation/encoder/pressure-alt-ft";
+  sims[12] = "/instrumentation/gps/indicated-altitude-ft";
+  sims[13] = "/instrumentation/gps/indicated-ground-speed-kt";
+  sims[14] = "/instrumentation/gps/indicated-vertical-speed";
+  sims[15] = "/instrumentation/heading-indicator/indicated-heading-deg";
+  sims[16] = "/instrumentation/magnetic-compass/indicated-heading-deg";
+  sims[17] = "/instrumentation/slip-skid-ball/indicated-slip-skid";
+  sims[18] = "/instrumentation/turn-indicator/indicated-turn-rate";
+  sims[19] = "/instrumentation/vertical-speed-indicator/indicated-speed-fpm";
+  sims[20] = "/controls/flight/aileron";
+  sims[21] = "/controls/flight/elevator";
+  sims[22] = "/controls/flight/rudder";
+  sims[23] = "/controls/flight/flaps";
+  sims[24] = "/controls/engines/engine/throttle";
+  sims[25] = "/controls/engines/current-engine/throttle";
+  sims[26] = "/controls/switches/master-avionics";
+  sims[27] = "/controls/switches/starter";
+  sims[28] = "/engines/active-engine/auto-start";
+  sims[29] = "/controls/flight/speedbrake";
+  sims[30] = "/sim/model/c172p/brake-parking";
+  sims[31] = "/controls/engines/engine/primer";
+  sims[32] = "/controls/engines/current-engine/mixture";
+  sims[33] = "/controls/switches/master-bat";
+  sims[34] = "/controls/switches/master-alt";
+  sims[35] = "/engines/engine/rpm";
+}
+
 bool InterpreterFlight::getKeepOpenServerThread() {
   return this->keepOpenServerThread;
 }
@@ -144,3 +183,17 @@ void InterpreterFlight::setSTObjMap(string varName, Obj *obj) {
   InterpreterFlight::getInstance()->mutex_.unlock();
 }
 
+
+
+string InterpreterFlight::getIndexOfArray(int index) {
+  return sims[index];
+}
+
+Obj* InterpreterFlight::get_STSimulatorObjBySim(string sim) {
+  map<string, Obj *>::iterator it = STSimulatorMap.begin();
+  for (; it != STSimulatorMap.end(); it++) {
+    if (it->second->getSim() == sim) {
+      return it->second;
+    }
+  }
+}
