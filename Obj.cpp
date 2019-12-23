@@ -57,4 +57,17 @@ void Obj::setSim(string newSim) {
   InterpreterFlight::getInstance()->mutex_.lock();
   this->sim = newSim;
   InterpreterFlight::getInstance()->mutex_.unlock();
+
+}
+bool Obj::getValueChanged() {
+  return this->valueChanged;
+}
+
+void Obj::setValueChanged(bool condition) {
+  this->valueChanged = condition;
+}
+
+string Obj :: createSetSim(){
+  string simUpdate = "set " + sim + " " + to_string(value) + "\r\n";
+  return simUpdate;
 }
