@@ -40,7 +40,12 @@ public:
 };
 
 class openControlCommand : public Command {
+    queue<Obj *> objToUpdate;
   virtual int execute(int index);
+
+    queue<Obj *> &getQueue();
+
+    void pushQueue(Obj *obj);
 };
 
 class varCommand : public Command {

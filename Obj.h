@@ -64,6 +64,8 @@ class Obj : public Expression{
   ~Obj(){};
   bool getValueChanged();
   string createSetSim();
+
+    string getName();
 };
 
 

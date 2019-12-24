@@ -80,3 +80,6 @@ string Obj :: createSetSim(){
   string simUpdate = "set " + sim + " " + to_string(value) + "\r\n";
   return simUpdate;
 }
+string Obj:: getName() {
+    return this->valName;
+}
