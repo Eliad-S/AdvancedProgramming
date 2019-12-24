@@ -125,6 +125,7 @@ class Token {
 };
 
 class Interpreter {
+public:
   unordered_map<string, Obj*> varObjMap;
 
  public:

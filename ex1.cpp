@@ -64,6 +64,10 @@ vector<Token *> Token::stringsToTokens(vector<string> vToken) {
           token->token_type = RightBrace;
         } else {
           //the string is an operator.
+          if (sTok.length() > 1) {
+              token->token_type = Variable;
+              token->parameter = sTok;
+          } else {
           const char op = sTok.at(0);
 
           switch (op) {
@@ -162,7 +166,7 @@ vector<string> Interpreter::separateS(string s) {
         token = "p";
       } else {
         if (s.substr(0, min).compare("-") == 0) {
-          token = "m1";
+          token = "m";
         } else {
           token = s.substr(0, min);
         }
@@ -304,6 +308,7 @@ Expression *Interpreter::interpret(string s) {
   queue < Token * > postfixToken = ShuntingYard(tokens);
   //create an expresion using Reverse Polish notation algorithm.
   Expression *expression = RPN(postfixToken);
+
   return expression;
 }
 
@@ -328,7 +333,7 @@ Expression *Interpreter::RPN(queue<Token *> &tokens) {
         }
         if (flag == 0) {
           Interpreter::deleteMemory(tokens);
-          throw "illegal math expression";
+          throw "illegal math expression 1";
         }
       } else {
         //it's an operator.
@@ -336,7 +341,7 @@ Expression *Interpreter::RPN(queue<Token *> &tokens) {
           // there are'nt enough for the operator.
           if (stack.size() < 2) {
             Interpreter::deleteMemory(tokens);
-            throw "illegal math expression";
+            throw "illegal math expression 2";
           }
           Expression *right = stack.top();
           stack.pop();
@@ -359,7 +364,7 @@ Expression *Interpreter::RPN(queue<Token *> &tokens) {
           //there is'nt an  expression in the stack.
           if (stack.size() == 0) {
             Interpreter::deleteMemory(tokens);
-            throw "illegal math expression";
+            throw "illegal math expression 3";
           }
           //unary
           Expression *unaryEx = stack.top();
@@ -383,7 +388,7 @@ Expression *Interpreter::RPN(queue<Token *> &tokens) {
     return stack.top();
   } else {
     Interpreter::deleteMemory(tokens);
-    throw "illegal math expression";
+    throw "illegal math expression 4";
   }
 }
 

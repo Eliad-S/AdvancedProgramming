@@ -46,6 +46,7 @@ float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const
             delete expression;
             delete interpreter;
         }
+        cout << "erorrrrrrrrrrrrrr : " << e << endl;
     }
     return result;
 }
@@ -53,15 +54,16 @@ float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const
 void openDataCommand::setSimulatorDetails(char buffer[], int valRead) {
     string details = buffer;
     string substr = "";
-    unordered_map<string, Obj *>::iterator it = getSTSimulatorMap().begin();
+    //unordered_map<string, Obj *>::iterator it = getSTSimulatorMap().begin();
     vector<float> args = splitArgs(details);
     int counter = 0;
     for (float f: args) {
         string sim = InterpreterFlight::getInstance()->getIndexOfArray(counter);
-        Obj *obj = InterpreterFlight::getInstance()->get_STSimulatorObjBySim(sim);
-        if (obj->getDirection() == -1) {
-            obj->setValue(f);
-        }
+//        Obj *obj = InterpreterFlight::getInstance()->get_STSimulatorObjBySim(sim);
+//        if (obj->getDirection() == -1) {
+//            obj->setValue(f);
+//        }
+        InterpreterFlight::getInstance()->get_STSimulatorObjBySim(sim)->setValue(f);
         counter++;
     }
 }
@@ -108,7 +110,7 @@ void openDataCommand::dataServerThread(int server_socket) {
         char buffer[1500] = {0};
         int valRead = read(server_socket, buffer, 1500);
         //check
-    cout << buffer << endl;
+    //cout << buffer << endl;
         setSimulatorDetails(buffer, valRead);
     }
 }
@@ -212,7 +214,7 @@ int openControlCommand::execute(int index) {
                 string message = InterpreterFlight::getInstance()->getQueue().front()->createSetSim();
                 InterpreterFlight::getInstance()->getQueue().front()->setValueChanged(false);
                 const char *p = message.c_str();
-                cout << "massage: " << p << endl;
+                //cout << "massage: " << p << endl;
                 int is_send = send(clientSocket, p, strlen(p), 0);
                 if (is_send == -1) {
                 }
@@ -369,7 +371,6 @@ int objCommand::execute(int index) {
     unordered_map<string, Obj *>::iterator it = getSTObjMap().find(name);
     it->second->setValue(value);
     if (it->second->getDirection() == 1) {
-        //cout << "name: " << name << ", " << value << endl;
         it->second->setValueChanged(true);
         InterpreterFlight::getInstance()->pushQueue(it->second);
         cv.notify_one();
