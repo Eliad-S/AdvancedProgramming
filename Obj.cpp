@@ -11,9 +11,10 @@ void Obj::setDirection(int d) {
 }
 void Obj::setValue(float val) {
   InterpreterFlight::getInstance()->mutex_.lock();
-  this->value = val;
+  if(!valueChanged) {
+    this->value = val;
+  }
   InterpreterFlight::getInstance()->mutex_.unlock();
-
 }
 
 
@@ -70,7 +71,9 @@ bool Obj::getValueChanged() {
 }
 
 void Obj::setValueChanged(bool condition) {
+  InterpreterFlight::getInstance()->mutex_.lock();
   this->valueChanged = condition;
+  InterpreterFlight::getInstance()->mutex_.unlock();
 }
 
 string Obj :: createSetSim(){

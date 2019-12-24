@@ -59,7 +59,7 @@ void openDataCommand::setSimulatorDetails(char buffer[], int valRead) {
   for (float f: args) {
     string sim = InterpreterFlight::getInstance()->getIndexOfArray(counter);
     Obj *obj = InterpreterFlight::getInstance()->get_STSimulatorObjBySim(sim);
-    if (!obj->getValueChanged()) {
+    if (obj->getDirection() == -1 && !obj->getValueChanged()) {
       obj->setValue(f);
     }
     counter++;
