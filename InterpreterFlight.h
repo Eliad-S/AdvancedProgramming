@@ -8,7 +8,16 @@
 #include <vector>
 #include <fstream>
 #include <unordered_map>
-#include "Commands.h"
+#include "Command.h"
+#include "InterpreterFlight.h"
+#include "openDataCommad.h"
+#include "OpenControlCommand.h"
+#include "VarCommand.h"
+#include "PrintCommand.h"
+#include "SleepCommand.h"
+#include "ObjCommand.h"
+#include "WhileCommand.h"
+#include "IfCommand.h"
 
 using namespace std;
 
@@ -22,19 +31,19 @@ class InterpreterFlight {
     bool keepOpenServerThread;
     bool keepOpenClientThread;
     string sims[36];
-
     InterpreterFlight() {
         setCommandMap(this->commandMap);
         setSTSimulatorMap(this->STSimulatorMap);
         this->keepOpenServerThread = true;
         this->keepOpenClientThread = true;
         setSimArray();
+
     }
 
 public:
+    OpenControlCommand *controlCommand;
     mutex mutex_;
     mutex mutex_2;
-    mutex queueLock;
     thread clientThread;
     thread serverThread;
 
@@ -75,6 +84,9 @@ public:
     void pushQueue(Obj *obj);
 
     queue<Obj *> &getQueue();
+
+    void popQueue();
+    ~InterpreterFlight();
 };
 
 #endif //ADVANCED__INTERPRETERFLIGHT_H_

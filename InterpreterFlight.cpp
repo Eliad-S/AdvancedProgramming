@@ -1,6 +1,8 @@
 //
 // Created by eliadsellem on 12/10/19.
 //
+
+
 #include "InterpreterFlight.h"
 
 InterpreterFlight *InterpreterFlight::instance = 0;
@@ -30,15 +32,10 @@ void InterpreterFlight::parser() {
     int index = 0;
     while (index < array.size()) {
         unordered_map<string, Command *>::iterator itCommand;
-        try {
-            itCommand = commandMap.find(array[index]);
-        } catch (...) {
-            cout << "parser" << endl;
-        }
-            if (itCommand != commandMap.end()) {
+        itCommand = commandMap.find(array[index]);
+        if (itCommand != commandMap.end()) {
             Command *c = commandMap.find(array[index])->second;
             index += c->execute(index);
-            cout << index << endl;
         }
     }
 
@@ -50,14 +47,14 @@ void InterpreterFlight::parser() {
 };
 
 void InterpreterFlight::setCommandMap(unordered_map<string, Command *> &map) {
-    map["openDataServer"] = new openDataCommand();
-    map["connectControlClient"] = new openControlCommand();
-    map["var"] = new varCommand();
-    map["Print"] = new printCommand();
-    map["Sleep"] = new sleepCommand();
-    map["obj"] = new objCommand();
-    map["while"] = new whileCommand();
-    map["if"] = new ifCommand();
+    map["openDataServer"] = new OpenDataCommand();
+    map["connectControlClient"] = new OpenControlCommand();
+    map["var"] = new VarCommand();
+    map["Print"] = new PrintCommand();
+    map["Sleep"] = new SleepCommand();
+    map["obj"] = new ObjCommand();
+    map["while"] = new WhileCommand();
+    map["if"] = new IfCommand();
 }
 
 void InterpreterFlight::setSTSimulatorMap(unordered_map<string, Obj *> &map) {
@@ -210,7 +207,29 @@ void InterpreterFlight::pushQueue(Obj *obj) {
 
 }
 
+void InterpreterFlight::popQueue() {
+    InterpreterFlight::getInstance()->mutex_2.lock();
+    this->objToUpdate.pop();
+    InterpreterFlight::getInstance()->mutex_2.unlock();
+
+}
 
 queue<Obj *> &InterpreterFlight::getQueue() {
     return this->objToUpdate;
+}
+
+InterpreterFlight::~InterpreterFlight() {
+    for (auto it1 : STSimulatorMap) {
+        if (STObjMap.find(it1.second->getName()) != STObjMap.end()) {
+            STObjMap.erase(it1.second->getName());
+        }
+        delete it1.second;
+    }
+    for (auto it2 : STObjMap) {
+        delete it2.second;
+    }
+
+    for (auto it3 : commandMap) {
+        delete it3.second;
+    }
 }

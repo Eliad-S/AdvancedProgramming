@@ -44,7 +44,7 @@ float Div::calculate() {
 //the method get vector of string that already splitted to tokens, and return vector of tokens
 //that have the information about each individual tokens by enter its relevant fileds.
 vector<Token *> Token::stringsToTokens(vector<string> vToken) {
-    vector < Token * > tokens;
+    vector<Token *> tokens;
     regex isNum("^[0-9]+\\.?[0-9]*$");
 
     for (unsigned int i = 0; i < vToken.size(); i++) {
@@ -63,58 +63,57 @@ vector<Token *> Token::stringsToTokens(vector<string> vToken) {
                 if (sTok.compare(")") == 0) {
                     token->token_type = RightBrace;
                 } else {
-                    if (sTok.length() > 2){
-                        token->token_type = Variable;
-                        token->parameter = sTok;
-                    } else {
-                        //the string is an operator.
-                        const char op = sTok.at(0);
+//                    if (sTok.length() > 2){
+//                        token->token_type = Variable;
+//                        token->parameter = sTok;
+//                    } else {
+                    //the string is an operator.
+                    const char op = sTok.at(0);
 
-                        switch (op) {
-                            //binary plus.
-                            case '+':
-                                token->token_type = Operator;
-                                token->symbol = '+';
-                                token->precedence = 10;
-                                token->binary = true;
-                                break;
-                                //unary plus
-                            case 'p':
-                                token->token_type = Operator;
-                                token->symbol = 'p';
-                                token->precedence = 30;
-                                token->binary = false;
-                                break;
-                                //binary minus.
-                            case '-':
-                                token->token_type = Operator;
-                                token->symbol = '-';
-                                token->precedence = 10;
-                                token->binary = true;
-                                break;
-                                //unary minus.
-                            case 'm':
-                                token->token_type = Operator;
-                                token->symbol = 'm';
-                                token->precedence = 30;
-                                token->binary = false;
-                                break;
-                            case '*':
-                                token->token_type = Operator;
-                                token->symbol = '*';
-                                token->precedence = 20;
-                                token->binary = true;
-                                break;
-                            case '/':
-                                token->token_type = Operator;
-                                token->symbol = '/';
-                                token->precedence = 20;
-                                token->binary = true;
-                                break;
-                            default:
-                                token->token_type = Variable;
-                                token->parameter = sTok;
-                        }
+                    switch (op) {
+                        //binary plus.
+                        case '+':
+                            token->token_type = Operator;
+                            token->symbol = '+';
+                            token->precedence = 10;
+                            token->binary = true;
+                            break;
+                            //unary plus
+                        case '#':
+                            token->token_type = Operator;
+                            token->symbol = '#';
+                            token->precedence = 30;
+                            token->binary = false;
+                            break;
+                            //binary minus.
+                        case '-':
+                            token->token_type = Operator;
+                            token->symbol = '-';
+                            token->precedence = 10;
+                            token->binary = true;
+                            break;
+                            //unary minus.
+                        case '$':
+                            token->token_type = Operator;
+                            token->symbol = '$';
+                            token->precedence = 30;
+                            token->binary = false;
+                            break;
+                        case '*':
+                            token->token_type = Operator;
+                            token->symbol = '*';
+                            token->precedence = 20;
+                            token->binary = true;
+                            break;
+                        case '/':
+                            token->token_type = Operator;
+                            token->symbol = '/';
+                            token->precedence = 20;
+                            token->binary = true;
+                            break;
+                        default:
+                            token->token_type = Variable;
+                            token->parameter = sTok;
                     }
                 }
             }
@@ -127,15 +126,19 @@ vector<Token *> Token::stringsToTokens(vector<string> vToken) {
 double Token::getValue() {
     return this->value;
 }
+
 char Token::getSymbol() {
     return this->symbol;
 }
+
 double Token::getPrecedence() {
     return this->precedence;
 }
+
 double Token::isBinary() {
     return this->binary;
 }
+
 string Token::getParameter() {
     return this->parameter;
 }
@@ -171,10 +174,10 @@ vector<string> Interpreter::separateS(string s) {
         if ((subs.size() == 0) || (subs[subs.size() - 1].compare("(") == 0)) {
             //change the unary operator to symbol that we will identify as unary at the future.
             if (s.substr(0, min).compare("+") == 0) {
-                token = "p";
+                token = "#";
             } else {
                 if (s.substr(0, min).compare("-") == 0) {
-                    token = "m1";
+                    token = "$";
                 } else {
                     token = s.substr(0, min);
                 }
@@ -214,8 +217,8 @@ void Interpreter::deleteMemory(queue<Token *> &outputQueue) {
 
 queue<Token *> Interpreter::ShuntingYard(vector<Token *> &tokens) {
     unsigned int index = 0;
-    std::queue < Token * > outputQueue;
-    std::stack < Token * > operatorStack;
+    std::queue<Token *> outputQueue;
+    std::stack<Token *> operatorStack;
 
     while (index < tokens.size()) {
         Token *t = tokens[index];
@@ -225,7 +228,7 @@ queue<Token *> Interpreter::ShuntingYard(vector<Token *> &tokens) {
             continue;
         }
         if (t->token_type == Token::Operator) {
-            if ((index == tokens.size() - 1) || (!t->isBinary() && tokens[index + 1]->token_type == Token::Variable)) {
+            if ((index == tokens.size() - 1)) {
                 Interpreter::deleteMemory(tokens, outputQueue, operatorStack);
                 throw "bad input";
             }
@@ -311,9 +314,9 @@ Expression *Interpreter::interpret(string s) {
     //separate the string given to relevant string parts
     vector<string> splittedParams = separateS(s);
     //take the previous vector and change it to Token's vector.
-    vector < Token * > tokens = Token::stringsToTokens(splittedParams);
+    vector<Token *> tokens = Token::stringsToTokens(splittedParams);
     //change to postfix.
-    queue < Token * > postfixToken = ShuntingYard(tokens);
+    queue<Token *> postfixToken = ShuntingYard(tokens);
     //create an expresion using Reverse Polish notation algorithm.
     Expression *expression = RPN(postfixToken);
     return expression;
@@ -321,7 +324,7 @@ Expression *Interpreter::interpret(string s) {
 
 //create an expresion using Reverse Polish notation algorithm.
 Expression *Interpreter::RPN(queue<Token *> &tokens) {
-    std::stack < Expression * > stack;
+    std::stack<Expression *> stack;
     // empty expression.
     if (tokens.size() == 0) return nullptr;
     while (!tokens.empty()) {
@@ -331,7 +334,8 @@ Expression *Interpreter::RPN(queue<Token *> &tokens) {
             //find the key's value at our map and create a variable type.
             if (tokens.front()->token_type == Token::Variable) {
                 int flag = 0;
-                for (std::unordered_map<string, Obj*>::iterator it = this->varObjMap.begin(); it != this->varObjMap.end(); it++) {
+                for (std::unordered_map<string, Obj *>::iterator it = this->varObjMap.begin();
+                     it != this->varObjMap.end(); it++) {
                     if (it->first.compare(tokens.front()->getParameter()) == 0) {
                         stack.push(new Obj(it->first, it->second->getValue()));
                         flag = 1;
@@ -356,15 +360,20 @@ Expression *Interpreter::RPN(queue<Token *> &tokens) {
                     stack.pop();
                     Expression *combine = nullptr;
                     switch (tokens.front()->getSymbol()) {
-                        case '+':combine = new Plus(left, right);
+                        case '+':
+                            combine = new Plus(left, right);
                             break;
-                        case '-':combine = new Minus(left, right);
+                        case '-':
+                            combine = new Minus(left, right);
                             break;
-                        case '*':combine = new Mul(left, right);
+                        case '*':
+                            combine = new Mul(left, right);
                             break;
-                        case '/':combine = new Div(left, right);
+                        case '/':
+                            combine = new Div(left, right);
                             break;
-                        default:break;
+                        default:
+                            break;
                     }
                     stack.push(combine);
                 } else {
@@ -378,11 +387,14 @@ Expression *Interpreter::RPN(queue<Token *> &tokens) {
                     Expression *newEx = nullptr;
                     stack.pop();
                     switch (tokens.front()->getSymbol()) {
-                        case 'p':newEx = new UPlus(unaryEx);
+                        case '#':
+                            newEx = new UPlus(unaryEx);
                             break;
-                        case 'm':newEx = new UMinus(unaryEx);
+                        case '$':
+                            newEx = new UMinus(unaryEx);
                             break;
-                        default:break;
+                        default:
+                            break;
                     }
                     stack.push(newEx);
                 }

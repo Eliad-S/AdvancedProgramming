@@ -1,6 +1,7 @@
 #include <iostream>
 #include "InterpreterFlight.h"
 #include "Lexer.h"
+
 int main(int argc, char *argv[]) {
   ifstream inFile(argv[1], ios::in);
   Lexer lexer(argv[1]);

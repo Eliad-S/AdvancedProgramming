@@ -61,11 +61,12 @@ class Obj : public Expression{
   int getDirection();
   void setSim(string basic_string);
   void setValueChanged(bool condition);
-  ~Obj(){};
   bool getValueChanged();
   string createSetSim();
 
     string getName();
+    ~Obj(){};
+
 };
 
 
