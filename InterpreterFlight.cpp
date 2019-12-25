@@ -33,6 +33,7 @@ void InterpreterFlight::parser() {
         if (itCommand != commandMap.end()) {
             Command *c = commandMap.find(array[index])->second;
             index += c->execute(index);
+            cout << index << endl;
         }
     }
 

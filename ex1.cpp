@@ -44,76 +44,84 @@ float Div::calculate() {
 //the method get vector of string that already splitted to tokens, and return vector of tokens
 //that have the information about each individual tokens by enter its relevant fileds.
 vector<Token *> Token::stringsToTokens(vector<string> vToken) {
-  vector < Token * > tokens;
-  regex isNum("^[0-9]+\\.?[0-9]*$");
+    vector<Token *> tokens;
+    regex isNum("^[0-9]+\\.?[0-9]*$");
 
-  for (unsigned int i = 0; i < vToken.size(); i++) {
-    Token *token = new Token();
-    string sTok = vToken[i];
-    //if the string represent a number
-    if (regex_match(sTok.begin(), sTok.end(), isNum)) {
-      token->value = stod(sTok);
-      token->token_type = Number;
-    } else {
-      //if the string represent a left brace.
-      if (sTok.compare("(") == 0) {
-        token->token_type = LeftBrace;
-      } else {
-        //if the string represent a right brace.
-        if (sTok.compare(")") == 0) {
-          token->token_type = RightBrace;
+    for (unsigned int i = 0; i < vToken.size(); i++) {
+        Token *token = new Token();
+        string sTok = vToken[i];
+        //if the string represent a number
+        if (regex_match(sTok.begin(), sTok.end(), isNum)) {
+            token->value = stod(sTok);
+            token->token_type = Number;
         } else {
-          //the string is an operator.
-          if (sTok.length() > 1) {
-              token->token_type = Variable;
-              token->parameter = sTok;
-          } else {
-          const char op = sTok.at(0);
+            //if the string represent a left brace.
+            if (sTok.compare("(") == 0) {
+                token->token_type = LeftBrace;
+            } else {
+                //if the string represent a right brace.
+                if (sTok.compare(")") == 0) {
+                    token->token_type = RightBrace;
+                } else {
+                    //the string is an operator.
+                    if (sTok.length() > 1) {
+                        token->token_type = Variable;
+                        token->parameter = sTok;
+                    } else {
+                        const char op = sTok.at(0);
 
-          switch (op) {
-            //binary plus.
-            case '+':token->token_type = Operator;
-              token->symbol = '+';
-              token->precedence = 10;
-              token->binary = true;
-              break;
-              //unary plus
-            case 'p':token->token_type = Operator;
-              token->symbol = 'p';
-              token->precedence = 30;
-              token->binary = false;
-              break;
-              //binary minus.
-            case '-':token->token_type = Operator;
-              token->symbol = '-';
-              token->precedence = 10;
-              token->binary = true;
-              break;
-              //unary minus.
-            case 'm':token->token_type = Operator;
-              token->symbol = 'm';
-              token->precedence = 30;
-              token->binary = false;
-              break;
-            case '*':token->token_type = Operator;
-              token->symbol = '*';
-              token->precedence = 20;
-              token->binary = true;
-              break;
-            case '/':token->token_type = Operator;
-              token->symbol = '/';
-              token->precedence = 20;
-              token->binary = true;
-              break;
-            default:token->token_type = Variable;
-              token->parameter = sTok;
-          }
+                        switch (op) {
+                            //binary plus.
+                            case '+':
+                                token->token_type = Operator;
+                                token->symbol = '+';
+                                token->precedence = 10;
+                                token->binary = true;
+                                break;
+                                //unary plus
+                            case 'p':
+                                token->token_type = Operator;
+                                token->symbol = 'p';
+                                token->precedence = 30;
+                                token->binary = false;
+                                break;
+                                //binary minus.
+                            case '-':
+                                token->token_type = Operator;
+                                token->symbol = '-';
+                                token->precedence = 10;
+                                token->binary = true;
+                                break;
+                                //unary minus.
+                            case 'm':
+                                token->token_type = Operator;
+                                token->symbol = 'm';
+                                token->precedence = 30;
+                                token->binary = false;
+                                break;
+                            case '*':
+                                token->token_type = Operator;
+                                token->symbol = '*';
+                                token->precedence = 20;
+                                token->binary = true;
+                                break;
+                            case '/':
+                                token->token_type = Operator;
+                                token->symbol = '/';
+                                token->precedence = 20;
+                                token->binary = true;
+                                break;
+                            default:
+                                token->token_type = Variable;
+                                token->parameter = sTok;
+                        }
+                    }
+                }
+            }
+            tokens.push_back(token);
         }
-      }
+        return tokens;
     }
-    tokens.push_back(token);
-  }
-  return tokens;
 }
 
 double Token::getValue() {
@@ -166,7 +174,7 @@ vector<string> Interpreter::separateS(string s) {
         token = "p";
       } else {
         if (s.substr(0, min).compare("-") == 0) {
-          token = "m";
+          token = "m1";
         } else {
           token = s.substr(0, min);
         }

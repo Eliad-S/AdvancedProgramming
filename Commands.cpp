@@ -223,15 +223,6 @@ int openControlCommand::execute(int index) {
                 InterpreterFlight::getInstance()->mutex_2.unlock();
 
             }
-//            for (auto it : InterpreterFlight::getInstance()->get_STSimulatorMap()) {
-//                for (auto g : InterpreterFlight::getInstance()->get_STObjMap()) {
-//                    if (g.second->getSim() == it.second->getSim()) {
-//                        cout << "name from simulator: " << it.second->getName() << "value from simulator: " << it.second->getValue() << endl;
-//                        cout << "name from simulator: " << g.second->getName() << "value from simulator: " << g.second->getValue() << endl;
-//
-//                    }
-//                }
-//            }
             unique_lock<mutex> ul(m);
             cv.wait(ul);
         }
@@ -347,11 +338,17 @@ bool conditionParser::checkCondition2(string var1, string condition, string var2
 }
 
 int printCommand::execute(int index) {
-    auto obj = getSTObjMap().find(getArray()[index + 1]);
-    if (obj != getSTObjMap().end()) {
-        cout << obj->second->getValue() << endl;
-    } else {
-        cout << getArray()[index + 1] << endl;
+    try {
+
+
+        auto obj = getSTObjMap().find(getArray()[index + 1]);
+        if (obj != getSTObjMap().end()) {
+            cout << obj->second->getValue() << endl;
+        } else {
+            cout << getArray()[index + 1] << endl;
+        }
+    } catch (...) {
+        cout << "printCommand" << endl;
     }
     return 2;
 }
@@ -359,6 +356,7 @@ int printCommand::execute(int index) {
 int sleepCommand::execute(int index) {
     int miliseconds = stoi(getArray()[index + 1]);
     this_thread::sleep_for(chrono::milliseconds(miliseconds));
+
     return 2;
 }
 

@@ -7,9 +7,5 @@ int main(int argc, char *argv[]) {
   InterpreterFlight *interpreter_flight = InterpreterFlight::getInstance();
   interpreter_flight->setTokens(lexer.token);
   interpreter_flight->parser();
-
-
-
-
   return 0;
 }
