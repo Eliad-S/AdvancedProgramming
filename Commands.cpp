@@ -48,6 +48,7 @@ float Command::calculateExpression(unordered_map<string, Obj *> &STObjMap, const
         }
         cout << "erorrrrrrrrrrrrrr : " << e << endl;
     }
+    cout << "erorrrrrrrrrrrrrr : " << e << endl;
     return result;
 }
 
@@ -338,8 +339,6 @@ bool conditionParser::checkCondition2(string var1, string condition, string var2
 }
 
 int printCommand::execute(int index) {
-    try {
-
 
         auto obj = getSTObjMap().find(getArray()[index + 1]);
         if (obj != getSTObjMap().end()) {
@@ -347,16 +346,14 @@ int printCommand::execute(int index) {
         } else {
             cout << getArray()[index + 1] << endl;
         }
-    } catch (...) {
         cout << "printCommand" << endl;
-    }
     return 2;
 }
 
 int sleepCommand::execute(int index) {
     int miliseconds = stoi(getArray()[index + 1]);
     this_thread::sleep_for(chrono::milliseconds(miliseconds));
-
+    cout << "sleepCommand" << endl;
     return 2;
 }
 
@@ -373,6 +370,7 @@ int objCommand::execute(int index) {
         InterpreterFlight::getInstance()->pushQueue(it->second);
         cv.notify_one();
     }
+    cout << "objCommand" << endl;
     return 4;
 }
 

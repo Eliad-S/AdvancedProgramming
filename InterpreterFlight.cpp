@@ -29,8 +29,13 @@ void InterpreterFlight::parser() {
 
     int index = 0;
     while (index < array.size()) {
-        unordered_map<string, Command *>::iterator itCommand = commandMap.find(array[index]);
-        if (itCommand != commandMap.end()) {
+        unordered_map<string, Command *>::iterator itCommand;
+        try {
+            itCommand = commandMap.find(array[index]);
+        } catch (...) {
+            cout << "parser" << endl;
+        }
+            if (itCommand != commandMap.end()) {
             Command *c = commandMap.find(array[index])->second;
             index += c->execute(index);
             cout << index << endl;

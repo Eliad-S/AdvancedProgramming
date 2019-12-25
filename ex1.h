@@ -17,134 +17,134 @@
 #include "Obj.h"
 
 class Value : public Expression {
-  const float val;
- public:
-  Value(float v) : val(v) {}
-  float calculate() override;
+    const float val;
+public:
+    Value(float v) : val(v) {}
+    float calculate() override;
 };
 
 class UnaryOperator : public Expression {
- protected:
-  Expression *exP{nullptr};
- public:
-  UnaryOperator(Expression *exp) {
-    this->exP = exp;
-  }
-  ~UnaryOperator() {
-    delete (exP);
-  }
+protected:
+    Expression *exP{nullptr};
+public:
+    UnaryOperator(Expression *exp) {
+        this->exP = exp;
+    }
+    ~UnaryOperator() {
+        delete (exP);
+    }
 };
 
 class UPlus : public UnaryOperator {
 
- public:
-  UPlus(Expression *exp) : UnaryOperator(exp) {};
+public:
+    UPlus(Expression *exp) : UnaryOperator(exp) {};
 
-  float calculate() override;
+    float calculate() override;
 };
 
 class UMinus : public UnaryOperator {
- public:
-  UMinus(Expression *exp) : UnaryOperator(exp) {}
-  float calculate();
+public:
+    UMinus(Expression *exp) : UnaryOperator(exp) {}
+    float calculate();
 
 };
 
 class BinaryOperator : public Expression {
- protected:
-  Expression *exP1{nullptr};
-  Expression *exP2{nullptr};
-  BinaryOperator(Expression *exp1, Expression *exp2) : exP1(exp1), exP2(exp2) {}
+protected:
+    Expression *exP1{nullptr};
+    Expression *exP2{nullptr};
+    BinaryOperator(Expression *exp1, Expression *exp2) : exP1(exp1), exP2(exp2) {}
 
- public:
-  ~BinaryOperator() {
-    delete (exP1);
-    delete (exP2);
-  }
+public:
+    ~BinaryOperator() {
+        delete (exP1);
+        delete (exP2);
+    }
 };
 
 class Plus : public BinaryOperator {
- public:
-  Plus(Expression *exp1, Expression *exp2) : BinaryOperator(exp1, exp2) {}
+public:
+    Plus(Expression *exp1, Expression *exp2) : BinaryOperator(exp1, exp2) {}
 
-  float calculate() override;
+    float calculate() override;
 };
 
 class Minus : public BinaryOperator {
- public:
-  Minus(Expression *exp1, Expression *exp2) : BinaryOperator(exp1, exp2) {}
+public:
+    Minus(Expression *exp1, Expression *exp2) : BinaryOperator(exp1, exp2) {}
 
-  float calculate() override;
+    float calculate() override;
 };
 
 class Mul : public BinaryOperator {
- public:
-  Mul(Expression *exp1, Expression *exp2) : BinaryOperator(exp1, exp2) {}
+public:
+    Mul(Expression *exp1, Expression *exp2) : BinaryOperator(exp1, exp2) {}
 
-  float calculate() override;
+    float calculate() override;
 };
 
 class Div : public BinaryOperator {
- public:
-  Div(Expression *exp1, Expression *exp2) : BinaryOperator(exp1, exp2) {}
-  float calculate() override;
+public:
+    Div(Expression *exp1, Expression *exp2) : BinaryOperator(exp1, exp2) {}
+    float calculate() override;
 };
 
 class Token {
 
-  //if its a number.
-  float value = 0;
-  //if its an operator.
-  char symbol = ' ';
-  int precedence = 0;
-  bool binary = false;
-  //if its a variable.
-  string parameter;
+    //if its a number.
+    float value = 0;
+    //if its an operator.
+    char symbol = ' ';
+    int precedence = 0;
+    bool binary = false;
+    //if its a variable.
+    string parameter;
 
-  Token() {}
+    Token() {}
 
- public:
-  enum TokenType {
-    Nothing,
-    Number,
-    Operator,
-    LeftBrace,
-    RightBrace,
-    Variable
-  };
+public:
+    enum TokenType {
+        Nothing,
+        Number,
+        Operator,
+        LeftBrace,
+        RightBrace,
+        Variable
+    };
 
-  TokenType token_type = TokenType(Nothing);
+    TokenType token_type = TokenType(Nothing);
 
-  static vector<Token *> stringsToTokens(vector<string> vToken);
+    static vector<Token *> stringsToTokens(vector<string> vToken);
 
-  double getValue();
-  char getSymbol();
-  double getPrecedence();
-  double isBinary();
-  string getParameter();
+    double getValue();
+    char getSymbol();
+    double getPrecedence();
+    double isBinary();
+    string getParameter();
 };
 
 class Interpreter {
-  unordered_map<string, Obj*> varObjMap;
+    unordered_map<string, Obj*> varObjMap;
 
- public:
+public:
 
-  Interpreter(unordered_map<string, Obj*> &map) {
-    this->varObjMap = map;
-  }
-  vector<string> separateS(string s);
+    Interpreter(unordered_map<string, Obj*> &map) {
+        this->varObjMap = map;
+    }
+    vector<string> separateS(string s);
 
-  Expression *interpret(string s);
+    Expression *interpret(string s);
 
-  queue<Token *> ShuntingYard(vector<Token *> &tokens);
+    queue<Token *> ShuntingYard(vector<Token *> &tokens);
 
-  Expression *RPN(queue<Token *> &tokens);
+    Expression *RPN(queue<Token *> &tokens);
 
-  vector<string> splitSBy(string s, string delimiter);
+    vector<string> splitSBy(string s, string delimiter);
 
-  void deleteMemory(vector<Token *> &tokens,queue<Token *> &outputQueue,stack<Token *> &operatorStack);
+    void deleteMemory(vector<Token *> &tokens,queue<Token *> &outputQueue,stack<Token *> &operatorStack);
 
-  void deleteMemory(queue<Token *> &outputQueue);
+    void deleteMemory(queue<Token *> &outputQueue);
 
 };
 
