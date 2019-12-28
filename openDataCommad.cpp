@@ -5,11 +5,11 @@
 #include "openDataCommad.h"
 #include "InterpreterFlight.h"
 
-void OpenDataCommand::setSimulatorDetails(char buffer[], int valRead) {
+void OpenDataCommand::setSimulatorDetails(char buffer[]) {
     string details = buffer;
     string substr = "";
     //unordered_map<string, Obj *>::iterator it = getSTSimulatorMap().begin();
-    vector<float> args = splitArgs(details);
+    vector<float>  args = splitArgs(details);
     int counter = 0;
     for (float f: args) {
         string sim = InterpreterFlight::getInstance()->getIndexOfArray(counter);
@@ -25,7 +25,6 @@ int OpenDataCommand::execute(int index) {
     string portS = getArray()[index + 1];
     //check if the its a number
     int port = stoi(portS);
-    char buffer[791] = {0};
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
         //error
@@ -61,10 +60,9 @@ void OpenDataCommand::dataServerThread(int server_socket) {
     // while clientThread == true.
     while (InterpreterFlight::getInstance()->getKeepOpenServerThread()) {
         char buffer[1500] = {0};
-        int valRead = read(server_socket, buffer, 1500);
+        read(server_socket, buffer, 1500);
         //check
-        //cout << buffer << endl;
-        setSimulatorDetails(buffer, valRead);
+        setSimulatorDetails(buffer);
     }
 }
 

@@ -29,7 +29,7 @@ void InterpreterFlight::setTokens(vector<string> &tokens) {
 
 void InterpreterFlight::parser() {
 
-    int index = 0;
+    unsigned int index = 0;
     while (index < array.size()) {
         unordered_map<string, Command *>::iterator itCommand;
         itCommand = commandMap.find(array[index]);
@@ -44,7 +44,7 @@ void InterpreterFlight::parser() {
     serverThread.join();
     clientThread.join();
 
-};
+}
 
 void InterpreterFlight::setCommandMap(unordered_map<string, Command *> &map) {
     map["openDataServer"] = new OpenDataCommand();

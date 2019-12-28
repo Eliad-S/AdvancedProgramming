@@ -12,7 +12,7 @@ class OpenDataCommand : public Command {
     virtual int execute(int index);
 public:
     static void dataServerThread(int client_socket);
-    static void setSimulatorDetails(char buffer[], int valRead);
+    static void setSimulatorDetails(char buffer[]);
     static vector<float> splitArgs(string basic_string);
 };
 

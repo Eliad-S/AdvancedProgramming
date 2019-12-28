@@ -19,6 +19,8 @@ public:
     void splitPrint(string s, vector<string> *tokens);
     void splitSleep(string s, vector<string> *tokens);
     void splitWhileOrIf(string s, vector<string> *tokens);
+
+    void splitFunc(string basicString, vector<string> *pVector);
 };
 #ifndef ADVANCEDPROGRAMMING_LEXER_H
 #define ADVANCEDPROGRAMMING_LEXER_H

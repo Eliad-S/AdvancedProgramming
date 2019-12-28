@@ -38,12 +38,12 @@ Obj &Obj::operator--(int) {
 }
 
 
-Obj &Obj::operator+=(float value) {
-  this->value += value;
+Obj &Obj::operator+=(float value1) {
+  this->value += value1;
   return *this;
 }
-Obj &Obj::operator-=(float value) {
-  this->value -= value;
+Obj &Obj::operator-=(float value1) {
+  this->value -= value1;
   return *this;
 }
 

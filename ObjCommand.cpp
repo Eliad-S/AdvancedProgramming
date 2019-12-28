@@ -19,4 +19,4 @@ int ObjCommand::execute(int index) {
         InterpreterFlight::getInstance()->controlCommand->cv.notify_one();
     }
     return 4;
-};
+}
