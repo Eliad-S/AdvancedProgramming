@@ -4,12 +4,19 @@
 
 
 #include "InterpreterFlight.h"
+#include "FuncCommand.h"
+#include "NewFuncCommand.h"
 
 InterpreterFlight *InterpreterFlight::instance = 0;
 
 unordered_map<string, Command *> &InterpreterFlight::get_CommandMap() {
     return this->commandMap;
 }
+
+unordered_map<string, pair<string ,Parser *>>& InterpreterFlight:: getFunctionMap(){
+    return this->functionMap;
+}
+
 
 unordered_map<string, Obj *> &InterpreterFlight::get_STSimulatorMap() {
     return this->STSimulatorMap;
@@ -27,26 +34,21 @@ void InterpreterFlight::setTokens(vector<string> &tokens) {
     this->array = tokens;
 }
 
-void InterpreterFlight::parser() {
-
-    unsigned int index = 0;
-    while (index < array.size()) {
-        unordered_map<string, Command *>::iterator itCommand;
-        itCommand = commandMap.find(array[index]);
-        if (itCommand != commandMap.end()) {
-            Command *c = commandMap.find(array[index])->second;
-            index += c->execute(index);
-        }
-    }
-
+void InterpreterFlight::done() {
     this->keepOpenServerThread = false;
     this->keepOpenClientThread = false;
+    cout<< "before join"<<endl;
     serverThread.join();
+    cout<< "after join 1"<<endl;
+    controlCommand->cv.notify_one();
     clientThread.join();
+    cout<< "after join 2"<<endl;
 
 }
 
 void InterpreterFlight::setCommandMap(unordered_map<string, Command *> &map) {
+    map["Func"] = new FuncCommand();
+    map["NewFunc"] = new NewFuncCommand();
     map["openDataServer"] = new OpenDataCommand();
     map["connectControlClient"] = new OpenControlCommand();
     map["var"] = new VarCommand();
@@ -56,6 +58,11 @@ void InterpreterFlight::setCommandMap(unordered_map<string, Command *> &map) {
     map["while"] = new WhileCommand();
     map["if"] = new IfCommand();
 }
+
+unordered_map<string, Command *> &InterpreterFlight::getCommandMap() {
+    return this->commandMap;
+}
+
 
 void InterpreterFlight::setSTSimulatorMap(unordered_map<string, Obj *> &map) {
     Obj *airspeed_indicator_indicated_speed_kt = new Obj("/instrumentation/airspeed-indicator/indicated-speed-kt");

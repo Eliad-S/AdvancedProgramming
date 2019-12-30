@@ -48,3 +48,19 @@ int WhileCommand::execute(int index) {
     }
     return counter2;
 }
+
+//if (whichCondition == 1) {
+//counter1 = 3;
+//Parser *parser = new Parser(index + counter1, counter2 - 2, getArray());
+//while (checkCondition1(v1)) {
+//parser->interpret();
+//}
+//delete (parser);
+//} else {
+//counter1 = 5;
+//Parser *parser = new Parser(index + counter1, counter2 - 2, getArray());
+//while (checkCondition2(v1, v2, v3)) {
+//parser->interpret();
+//}
+//delete (parser);
+//}

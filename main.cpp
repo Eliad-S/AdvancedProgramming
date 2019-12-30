@@ -1,13 +1,17 @@
-#include <iostream>
 #include "InterpreterFlight.h"
 #include "Lexer.h"
+#include "Parser.h"
 
 int main(int argc, char *argv[]) {
     (void) argc;
-    ifstream inFile(argv[1], ios::in);
     Lexer lexer(argv[1]);
     InterpreterFlight *interpreter_flight = InterpreterFlight::getInstance();
     interpreter_flight->setTokens(lexer.token);
-    interpreter_flight->parser();
+    Parser* parser = new Parser(lexer.token);
+    parser->interpret();
+    InterpreterFlight::getInstance()->done();
+    delete (parser);
+    delete (InterpreterFlight::getInstance());
+    cout<< "end delete"<<endl;
     return 0;
 }

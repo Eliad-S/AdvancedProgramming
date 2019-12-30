@@ -8,8 +8,6 @@
 #include <vector>
 #include <fstream>
 #include <unordered_map>
-#include "Command.h"
-#include "InterpreterFlight.h"
 #include "openDataCommad.h"
 #include "OpenControlCommand.h"
 #include "VarCommand.h"
@@ -18,13 +16,19 @@
 #include "ObjCommand.h"
 #include "WhileCommand.h"
 #include "IfCommand.h"
+#include "Parser.h"
+
+
 
 using namespace std;
 
 class InterpreterFlight {
+    unordered_map<string, pair<string ,Parser *>> functionMap;
     unordered_map<string, Command *> commandMap;
     unordered_map<string, Obj *> STSimulatorMap;
     unordered_map<string, Obj *> STObjMap;
+
+
     vector<string> array;
     queue<Obj *> objToUpdate;
     static InterpreterFlight *instance;
@@ -63,15 +67,22 @@ public:
 
     void setCommandMap(unordered_map<string, Command *> &map);
 
+    unordered_map<string, Command *>& getCommandMap();
+
+
     void setSTSimulatorMap(unordered_map<string, Obj *> &map);
 
     void setTokens(vector<string> &tokens);
 
-    void parser();
+    void done();
 
     bool getKeepOpenServerThread();
 
     bool getKeepOpenClientThread();
+
+
+    unordered_map<string, pair<string ,Parser *>>& getFunctionMap();
+
 
     void setSTObjMap(string basic_string, Obj *p_obj);
 

@@ -52,7 +52,7 @@ Lexer::Lexer(string fileName) {
             if (substr == "while") {
                 tokens.push_back("while");
                 string withoutSpaces =
-                        removeSpace((*i).substr(5, (*i).length() - 1));
+                        removeSpace((*i).substr(j, (*i).length() - 1));
                 splitWhileOrIf(withoutSpaces, &tokens);
                 substr = "";
                 break;
@@ -87,6 +87,7 @@ Lexer::Lexer(string fileName) {
         }
     }
     this->token = tokens;
+    in.close();
 }
 
 string Lexer::removeSpace(string str) {
@@ -110,12 +111,12 @@ string Lexer::removeQuotatin(string str) {
 }
 
 void Lexer::splitOther(string s, vector<string> *tokens) {
-    tokens->push_back("obj");
     s = removeSpace(s);
     unsigned int index;
     string name;
     index = s.find("+=");
     if (index < s.length()) {
+        tokens->push_back("obj");
         name = s.substr(0, index);
         tokens->push_back(s.substr(0, index));
         tokens->push_back("=");
@@ -126,6 +127,7 @@ void Lexer::splitOther(string s, vector<string> *tokens) {
     }
     index = s.find("-=");
     if (index < s.length()) {
+        tokens->push_back("obj");
         name = s.substr(0, index);
         tokens->push_back(s.substr(0, index));
         tokens->push_back("=");
@@ -136,6 +138,7 @@ void Lexer::splitOther(string s, vector<string> *tokens) {
     }
     index = s.find("*=");
     if (index < s.length()) {
+        tokens->push_back("obj");
         name = s.substr(0, index);
         tokens->push_back(s.substr(0, index));
         tokens->push_back("=");
@@ -146,6 +149,7 @@ void Lexer::splitOther(string s, vector<string> *tokens) {
     }
     index = s.find("/=");
     if (index < s.length()) {
+        tokens->push_back("obj");
         name = s.substr(0, index);
         tokens->push_back(s.substr(0, index));
         tokens->push_back("=");
@@ -156,10 +160,20 @@ void Lexer::splitOther(string s, vector<string> *tokens) {
     }
     index = s.find("=");
     if (index < s.length()) {
+        tokens->push_back("obj");
         tokens->push_back(s.substr(0, index));
         tokens->push_back("=");
         tokens->push_back(s.substr(index + 1, s.length() - 1));
         return;
+    }
+    index = s.find("(");
+    if (index < s.length()) {
+        tokens->push_back("Func");
+        // name
+        tokens->push_back(s.substr(0, index));
+        s = removeQuotatin(s.substr(index));
+        // parameter
+        tokens->push_back(s);
     }
 }
 
@@ -285,7 +299,7 @@ void Lexer::splitWhileOrIf(string s, vector<string> *tokens) {
 }
 
 void Lexer::splitFunc(string s, vector<string> *tokens) {
-    tokens->push_back("Func");
+    tokens->push_back("NewFunc");
     int index = s.find('(');
     string nameFunc = s.substr(0, index);
     s = s.substr(index + 1);
