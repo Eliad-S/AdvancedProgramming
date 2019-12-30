@@ -9,6 +9,9 @@
 #include "Command.h"
 
 class SleepCommand : public Command {
+    /*
+     * sleep the program.
+     */
     virtual int execute(int index);
 };
 

@@ -9,7 +9,6 @@ int ObjCommand::execute(int index) {
 
     string name = getArray()[index + 1];
     string expression = getArray()[index + 3];
-    cout << "name: " << name << endl;
     float value = calculateExpression(getSTObjMap(), expression);
     unordered_map<string, Obj *>::iterator it = getSTObjMap().find(name);
     it->second->setValue(value);

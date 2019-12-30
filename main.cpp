@@ -1,7 +1,6 @@
 #include "InterpreterFlight.h"
 #include "Lexer.h"
 #include "Parser.h"
-
 int main(int argc, char *argv[]) {
     (void) argc;
     Lexer lexer(argv[1]);
@@ -12,6 +11,5 @@ int main(int argc, char *argv[]) {
     InterpreterFlight::getInstance()->done();
     delete (parser);
     delete (InterpreterFlight::getInstance());
-    cout<< "end delete"<<endl;
     return 0;
 }

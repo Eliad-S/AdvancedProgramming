@@ -9,12 +9,11 @@
 #include "Command.h"
 
 class OpenControlCommand : public Command {
-    queue<Obj *> objToUpdate;
+    /*
+     * open a new connection with the simulator as a client and update
+     * him values that have been change in our data.
+     */
     virtual int execute(int index);
-
-    queue<Obj *> &getQueue();
-
-    void pushQueue(Obj *obj);
 
 public:
     condition_variable cv;

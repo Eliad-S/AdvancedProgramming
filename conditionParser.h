@@ -10,8 +10,13 @@
 
 class ConditionParser : public Command {
 public:
-    vector<Command *> commands;
+    /*
+     * check if the condition is true if there is only one expression.
+     */
     bool checkCondition1(string var);
+    /*
+     * check if the condition is true if there is two expressions and condition between them.
+     */
     bool checkCondition2(string var1, string condition, string var2);
 };
 

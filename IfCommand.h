@@ -9,6 +9,9 @@
 #include "conditionParser.h"
 
 class IfCommand : public ConditionParser {
+    /*
+     * execute all the command in the "if", if the condition is true.
+     */
     virtual int execute(int index);
 };
 

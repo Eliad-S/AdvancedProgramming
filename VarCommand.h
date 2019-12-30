@@ -8,6 +8,9 @@
 #include "Command.h"
 
 class VarCommand : public Command {
+    /*
+     * insert new variable to the map.
+     */
     virtual int execute(int index);
 };
 

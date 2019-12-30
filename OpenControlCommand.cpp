@@ -15,7 +15,7 @@ int OpenControlCommand::execute(int index) {
     }
     string i = getArray()[index + 1];
     const char *ip = i.c_str();
-    int port = stoi(getArray()[index + 2]);
+    int port = calculateExpression(InterpreterFlight::getInstance()->get_STObjMap(), getArray()[index + 2]);
     sockaddr_in address;
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = inet_addr(ip);
@@ -36,7 +36,6 @@ int OpenControlCommand::execute(int index) {
                 int is_send = send(clientSocket, p, strlen(p), 0);
                 if (is_send == -1) {
                 }
-
                 InterpreterFlight::getInstance()->getQueue().pop();
                 InterpreterFlight::getInstance()->mutex_2.unlock();
 
