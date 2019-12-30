@@ -8,13 +8,12 @@
 void OpenDataCommand::setSimulatorDetails(char buffer[]) {
     string details = buffer;
     string substr = "";
-    //unordered_map<string, Obj *>::iterator it = getSTSimulatorMap().begin();
     vector<float>  args = splitArgs(details);
     int counter = 0;
     for (float f: args) {
         string sim = InterpreterFlight::getInstance()->getSimByIndex(counter);
         Obj *obj = InterpreterFlight::getInstance()->get_STSimulatorObjBySim(sim);
-        if (obj->getDirection() == -1) {
+        if (obj->getDirection() == -1 && !obj->getValueChanged()) {
             obj->setValue(f);
         }
         counter++;
@@ -24,7 +23,7 @@ void OpenDataCommand::setSimulatorDetails(char buffer[]) {
 int OpenDataCommand::execute(int index) {
     string portS = getArray()[index + 1];
     //check if the its a number
-    int port = stoi(portS);
+    int port = calculateExpression(InterpreterFlight::getInstance()->get_STObjMap(), portS);
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
         //error
@@ -61,7 +60,6 @@ void OpenDataCommand::dataServerThread(int server_socket) {
     while (InterpreterFlight::getInstance()->getKeepOpenServerThread()) {
         char buffer[1500] = {0};
         read(server_socket, buffer, 1500);
-        //check
         setSimulatorDetails(buffer);
     }
 }

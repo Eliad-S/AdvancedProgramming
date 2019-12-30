@@ -9,6 +9,9 @@
 #include "Command.h"
 
 class PrintCommand : public Command {
+    /*
+     * print the given value.
+     */
     virtual int execute(int index);
 };
 

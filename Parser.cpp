@@ -16,6 +16,4 @@ void Parser:: interpret() {
             index += c->execute(index);
         }
     }
-    cout<< "end parser"<<endl;
-
 }

@@ -47,6 +47,14 @@ Obj &Obj::operator-=(float value1) {
   return *this;
 }
 
+float Obj:: getValue() {
+    return this->value;
+}
+
+string Obj:: getSim() {
+    return this->sim;
+}
+
 float Obj::calculate() {
   return this->value;
 }
@@ -60,12 +68,7 @@ int Obj::getDirection() {
   return this->direction;
 
 }
-void Obj::setSim(string newSim) {
-  InterpreterFlight::getInstance()->mutex_.lock();
-  this->sim = newSim;
-  InterpreterFlight::getInstance()->mutex_.unlock();
 
-}
 bool Obj::getValueChanged() {
   return this->valueChanged;
 }

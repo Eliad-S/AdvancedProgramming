@@ -10,6 +10,9 @@
 #include "InterpreterFlight.h"
 
 class FuncCommand : public Command {
+    /*
+     * execute all the commands in the function.
+     */
     virtual int execute(int index);
 
 };

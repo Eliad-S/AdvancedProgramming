@@ -9,6 +9,9 @@
 #include "conditionParser.h"
 
 class WhileCommand : public ConditionParser {
+    /*
+     * execute all the command in the "while", while the condition is true.
+     */
     virtual int execute(int index);
 };
 

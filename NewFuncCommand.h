@@ -9,7 +9,9 @@
 #include "Command.h"
 
 class NewFuncCommand: public Command {
-
+    /*
+     *
+     */
     virtual int execute(int index);
 
 };
