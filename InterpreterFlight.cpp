@@ -59,10 +59,6 @@ void InterpreterFlight::setCommandMap(unordered_map<string, Command *> &map) {
     map["if"] = new IfCommand();
 }
 
-unordered_map<string, Command *> &InterpreterFlight::getCommandMap() {
-    return this->commandMap;
-}
-
 
 void InterpreterFlight::setSTSimulatorMap(unordered_map<string, Obj *> &map) {
     Obj *airspeed_indicator_indicated_speed_kt = new Obj("/instrumentation/airspeed-indicator/indicated-speed-kt");
@@ -193,7 +189,7 @@ void InterpreterFlight::setSTObjMap(string varName, Obj *obj) {
     InterpreterFlight::getInstance()->mutex_.unlock();
 }
 
-string InterpreterFlight::getIndexOfArray(int index) {
+string InterpreterFlight::getSimByIndex(int index) {
     return sims[index];
 }
 
@@ -210,13 +206,6 @@ Obj *InterpreterFlight::get_STSimulatorObjBySim(string sim) {
 void InterpreterFlight::pushQueue(Obj *obj) {
     InterpreterFlight::getInstance()->mutex_2.lock();
     this->objToUpdate.push(obj);
-    InterpreterFlight::getInstance()->mutex_2.unlock();
-
-}
-
-void InterpreterFlight::popQueue() {
-    InterpreterFlight::getInstance()->mutex_2.lock();
-    this->objToUpdate.pop();
     InterpreterFlight::getInstance()->mutex_2.unlock();
 
 }

@@ -24,17 +24,27 @@ class Command {
 public:
 
     virtual int execute(int index) = 0;
-
+/*
+ * The function recieve a STObjMap and and expresion, calculate it and return the value.
+ */
     float calculateExpression(unordered_map<string, Obj *> &STObjMap, const string &e);
-
+// distructor.
     virtual ~Command() {}
-
+/*
+ * return the commandMap from the singleton class "InterpreterFlight"
+ */
     unordered_map<string, Command *> &getCommandMap();
-
+/*
+ * return the STSimulatorMap from the singleton class "InterpreterFlight"
+ */
     unordered_map<string, Obj *> &getSTSimulatorMap();
-
+/*
+ * return the vector "array" from the singleton class "InterpreterFlight"
+ */
     vector<string> &getArray();
-
+/*
+ * return the STObjMap from the singleton class "InterpreterFlight"
+ */
     unordered_map<string, Obj *> &getSTObjMap();
 
 };

@@ -12,7 +12,7 @@ void OpenDataCommand::setSimulatorDetails(char buffer[]) {
     vector<float>  args = splitArgs(details);
     int counter = 0;
     for (float f: args) {
-        string sim = InterpreterFlight::getInstance()->getIndexOfArray(counter);
+        string sim = InterpreterFlight::getInstance()->getSimByIndex(counter);
         Obj *obj = InterpreterFlight::getInstance()->get_STSimulatorObjBySim(sim);
         if (obj->getDirection() == -1) {
             obj->setValue(f);

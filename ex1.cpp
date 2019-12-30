@@ -286,30 +286,6 @@ queue<Token *> Interpreter::ShuntingYard(vector<Token *> &tokens) {
     return outputQueue;
 }
 
-//this method split a string by the string we give it.
-vector<string> Interpreter::splitSBy(string s, string delimiter) {
-    vector<string> sVec;
-    size_t pos = 0;
-    std::string token;
-
-    while (s.length() != 0) {
-        pos = s.find(delimiter);
-        //if the delimiter does not found in the string we change "pos" to the end of the string.
-        if (pos >= s.length()) {
-            pos = s.length();
-            token = s.substr(0, pos);
-            s.erase(0, pos);
-        } else {
-            //we to found the delimiter.
-            token = s.substr(0, pos);
-            s.erase(0, pos + delimiter.length());
-        }
-
-        sVec.push_back(token);
-    }
-    return sVec;
-}
-
 Expression *Interpreter::interpret(string s) {
     //separate the string given to relevant string parts
     vector<string> splittedParams = separateS(s);

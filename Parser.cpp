@@ -7,7 +7,7 @@
 
 
 void Parser:: interpret() {
-    unsigned int index = this->start;
+    int index = this->start;
     while (index < limit) {
         unordered_map<string, Command *>::iterator itCommand;
         itCommand = InterpreterFlight::getInstance()->get_CommandMap().find(array[index]);
