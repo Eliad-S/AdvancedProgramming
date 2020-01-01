@@ -49,7 +49,7 @@ You can choose IP and Port as desired, but you should keep LocalHost IP if you'r
 3. Complie the program code:
 
     ```bash
-    g++ -std=c++14 *.cpp -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -o a.out
+    g++ -std=c++14 *.cpp -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -o a.out -pthread
     ```
 
 4. Run a.out with the relative path of the code you want to execute as the first argument (Should be in txt file).
