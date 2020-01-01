@@ -16,7 +16,7 @@ This program was developed by Eliad sellem and Shir Goldberger, CS students from
 
 ## Features
 
-- The program is reading reading from a file given as an argument to the program and placed in the directory of the
+- The program is reading from a file given as an argument to the program and placed in the directory of the
 cpp of the running program, and start to interpret it line by line and translate it into flight insructions.
 
 - while interpret the file, the program will open a new connection with the simulator, the program as a server and the
