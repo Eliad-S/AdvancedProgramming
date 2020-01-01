@@ -60,5 +60,5 @@ You can choose IP and Port as desired, but you should keep LocalHost IP if you'r
 
 ## Comments
 
-1. Please find the file: "fly_with_func" in the repository as an example to a valid script, you can go ahead and execute it.
+1. Please find the file: "fly.txt" in the repository as an example to a valid script, you can go ahead and execute it.
 
