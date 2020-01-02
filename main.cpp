@@ -12,7 +12,6 @@ int main(int argc, char *argv[]) {
     Parser* parser = new Parser(lexer.token);
     parser->interpret();
     InterpreterFlight::getInstance()->done();
-    delete (parser);
     delete (InterpreterFlight::getInstance());
     return 0;
 }

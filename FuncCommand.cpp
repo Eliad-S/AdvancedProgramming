@@ -17,6 +17,7 @@ int FuncCommand:: execute(int index){
     getSTObjMap()[var] = obj;
     Parser* parser = it->second.second;
     parser->interpret();
+    delete(getSTObjMap().find(var)->second);
     getSTObjMap().erase(getSTObjMap().find(var));
     delete (parser);
     return 3;
