@@ -1,7 +1,6 @@
 //
-// Created by shirgold on 25/12/2019.
+// Created by shirgold and EliadSellem on 25/12/2019.
 //
-
 #ifndef ADVANCEDPROGRAMMING_IFCOMMAND_H
 #define ADVANCEDPROGRAMMING_IFCOMMAND_H
 

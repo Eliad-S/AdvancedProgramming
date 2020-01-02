@@ -1,7 +1,6 @@
 //
-// Created by shirgold on 25/12/2019.
+// Created by shirgold and EliadSellem on 25/12/2019.
 //
-
 #include "VarCommand.h"
 #include "InterpreterFlight.h"
 

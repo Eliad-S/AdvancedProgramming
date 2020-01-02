@@ -1,5 +1,5 @@
 //
-// Created by shirgold on 25/12/2019.
+// Created by shirgold and EliadSellem on 25/12/2019.
 //
 
 #include "openDataCommad.h"
@@ -58,6 +58,7 @@ int OpenDataCommand::execute(int index) {
 void OpenDataCommand::dataServerThread(int server_socket) {
   // while clientThread == true.
   while (InterpreterFlight::getInstance()->getKeepOpenServerThread()) {
+
     char buffer[1500] = {0};
     read(server_socket, buffer, 1500);
     setSimulatorDetails(buffer);
@@ -68,7 +69,7 @@ vector<float> OpenDataCommand::splitArgs(string details) {
   int pos = 0;
   vector<float> args;
   int index = details.find("\n");
-  int index2 = details.find("\n", index + 1);
+  unsigned int index2 = details.find("\n", index + 1);
 
   if (index2 < details.length()) {
     details = details.substr(index + 1, details.length() - index - 1);
