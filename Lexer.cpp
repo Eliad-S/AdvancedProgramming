@@ -76,6 +76,7 @@ Lexer::Lexer(string fileName) {
             if (substr == " " || substr == "\t") {
                 substr = "";
             }
+            // if we arrive to {, it means this line is declaration of new function.
             if ((*i)[j] == '{') {
                 splitFunc(substr, &tokens);
                 substr = "";
@@ -96,6 +97,7 @@ Lexer::Lexer(string fileName) {
 string Lexer::removeSpace(string str) {
     string dest = "";
     for (unsigned int i = 0; i < str.length(); ++i) {
+        // remove spaces.
         if (str[i] != ' ') {
             dest += str[i];
         }
@@ -106,6 +108,7 @@ string Lexer::removeSpace(string str) {
 string Lexer::removeQuotatin(string str) {
     string dest = "";
     for (unsigned int i = 0; i < str.length(); ++i) {
+        // remove ", ) and (.
         if (str[i] != '"' && str[i] != ')' && str[i] != '(') {
             dest += str[i];
         }
@@ -217,7 +220,8 @@ void Lexer::splitOpenDataServer(string s, vector<string> *tokens) {
     tokens->push_back("openDataServer");
     int startIndex = s.find("(");
     int endIndex = s.find(")");
-    tokens->push_back(s.substr(startIndex + 1, endIndex - 1)); // check
+    // port
+    tokens->push_back(s.substr(startIndex + 1, endIndex - 1));
 }
 
 void Lexer::splitConnectControlClient(string s, vector<string> *tokens) {
@@ -236,11 +240,13 @@ void Lexer::splitConnectControlClient(string s, vector<string> *tokens) {
 
 void Lexer::splitPrint(string s, vector<string> *tokens) {
     tokens->push_back("Print");
+    // the messege.
     tokens->push_back(s.substr(1, s.length() - 2));
 }
 
 void Lexer::splitSleep(string s, vector<string> *tokens) {
     tokens->push_back("Sleep");
+    // milliseconds for sleep.
     tokens->push_back(removeQuotatin(s));
 }
 
