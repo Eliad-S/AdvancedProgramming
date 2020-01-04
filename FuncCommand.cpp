@@ -19,6 +19,6 @@ int FuncCommand:: execute(int index){
     parser->interpret();
     delete(getSTObjMap().find(var)->second);
     getSTObjMap().erase(getSTObjMap().find(var));
-    //delete (parser);
+    delete (parser);
     return 3;
 }
