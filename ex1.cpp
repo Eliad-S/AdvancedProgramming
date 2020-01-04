@@ -64,10 +64,6 @@ vector<Token *> Token::stringsToTokens(vector<string> vToken) {
                 if (sTok.compare(")") == 0) {
                     token->token_type = RightBrace;
                 } else {
-//                    if (sTok.length() > 2){
-//                        token->token_type = Variable;
-//                        token->parameter = sTok;
-//                    } else {
                     //the string is an operator.
                     const char op = sTok.at(0);
 
