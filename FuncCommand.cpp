@@ -17,12 +17,12 @@ int FuncCommand:: execute(int index){
     string var = it->second.first;
     //calculate the expression of the argument given
     float f = calculateExpression(getSTObjMap(),value);
-    // create a temporery obj with the name "x" of the declaration and the value as the argument given
+    // create a temporary obj with the name "x" of the declaration and the value as the argument given
     Obj* obj = new Obj(var,f);
     getSTObjMap()[var] = obj;
     Parser* parser = it->second.second;
     parser->interpret();
-    //delete the temporery obj.
+    //delete the temporary obj.
     delete(getSTObjMap().find(var)->second);
     getSTObjMap().erase(getSTObjMap().find(var));
     return 3;
