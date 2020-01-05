@@ -14,7 +14,7 @@ bool ConditionParser::checkCondition1(string var) {
 
 bool ConditionParser::checkCondition2(string var1, string condition, string var2) {
   bool flag = false;
-  //caclulate both expression and return true if they 
+  //caclulate both expression and return true if they implement the logic with the operator given
   float val1 = calculateExpression(getSTObjMap(), var1);
   float val2 = calculateExpression(getSTObjMap(), var2);
   if (condition == "!=") {

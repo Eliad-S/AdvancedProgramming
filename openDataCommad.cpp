@@ -8,8 +8,10 @@
 void OpenDataCommand::setSimulatorDetails(char buffer[]) {
   string details = buffer;
   string substr = "";
+  //get all the details need to update ordered in a vector structor.
   vector<float> args = splitArgs(details);
   int counter = 0;
+  //update our data in the new details.
   for (float f: args) {
     string sim = InterpreterFlight::getInstance()->getSimByIndex(counter);
     Obj *obj = InterpreterFlight::getInstance()->get_STSimulatorObjBySim(sim);
@@ -58,14 +60,16 @@ int OpenDataCommand::execute(int index) {
 void OpenDataCommand::dataServerThread(int server_socket) {
   // while clientThread == true.
   while (InterpreterFlight::getInstance()->getKeepOpenServerThread()) {
-
+    //get messages from the simulator server.
     char buffer[1500] = {0};
     read(server_socket, buffer, 1500);
+    //set the details given
     setSimulatorDetails(buffer);
   }
 }
 
 vector<float> OpenDataCommand::splitArgs(string details) {
+  //get the details between two /n to prevent half of details.
   int pos = 0;
   vector<float> args;
   int index = details.find("\n");
@@ -75,6 +79,7 @@ vector<float> OpenDataCommand::splitArgs(string details) {
     details = details.substr(index + 1, details.length() - index - 1);
   }
   string substr = "";
+  //split the buffer and calculete the substring into float and put them in a vector structor.
   for (int j = 0; j < 36; j++) {
     if (details.find(",") < details.find("\n")) {
       substr = details.substr(pos, details.find(","));

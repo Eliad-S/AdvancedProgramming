@@ -26,9 +26,12 @@ int OpenControlCommand::execute(int index) {
     cerr << "could not connect to the simulator" << endl;
     return -2;
   }
+  //open a new thread that will open connection with the simulator as a client
   InterpreterFlight::getInstance()->clientThread = thread([clientSocket, this]() {
 
     while (InterpreterFlight::getInstance()->getKeepOpenClientThread()) {
+      //update the simulator of values that have been changed in our program while compiling,
+      //that have been put in the queue of value to update.
       while (!InterpreterFlight::getInstance()->getQueue().empty()) {
         InterpreterFlight::getInstance()->mutex_2.lock();
         string message = InterpreterFlight::getInstance()->getQueue().front()->createSetSim();
@@ -41,6 +44,7 @@ int OpenControlCommand::execute(int index) {
         InterpreterFlight::getInstance()->mutex_2.unlock();
 
       }
+      //wait until someone will inform us that we need to update new values.
       unique_lock<mutex> ul(m);
       cv.wait(ul);
     }
