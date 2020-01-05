@@ -9,6 +9,9 @@ using namespace std;
 
 Lexer::Lexer(string fileName) {
     ifstream in(fileName);
+    if (!in.is_open()) {
+        throw "could not open the file";
+    }
     string str;
     vector<string> lines;
     // read lines

@@ -36,12 +36,9 @@ void InterpreterFlight::setTokens(vector<string> &tokens) {
 void InterpreterFlight::done() {
     this->keepOpenServerThread = false;
     this->keepOpenClientThread = false;
-    cout<< "before join"<<endl;
     serverThread.join();
-    cout<< "after join 1"<<endl;
     controlCommand->cv.notify_one();
     clientThread.join();
-    cout<< "after join 2"<<endl;
 
 }
 
