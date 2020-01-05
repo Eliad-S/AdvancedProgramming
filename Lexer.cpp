@@ -17,15 +17,19 @@ Lexer::Lexer(string fileName) {
     }
     string substr = "";
     vector<string> tokens;
+    // check every line
     for (auto i = lines.begin(); i < lines.end(); i++) {
+        // check every character
         for (unsigned int j = 0; j < (*i).length(); j++) {
+            // split lines of variable
             if (substr == "var") {
                 string withoutSpaces =
                         removeSpace((*i).substr(4, (*i).length() - 1));
-                splitVar(withoutSpaces, &tokens); // check
+                splitVar(withoutSpaces, &tokens);
                 substr = "";
                 break;
             }
+            // split line of open data server
             if (substr == "openDataServer") {
                 string withoutSpaces =
                         removeSpace((*i).substr(14, (*i).length() - 1));
@@ -33,6 +37,7 @@ Lexer::Lexer(string fileName) {
                 substr = "";
                 break;
             }
+            // split lines of connect Control Client
             if (substr == "connectControlClient") {
                 string withoutSpaces =
                         removeSpace((*i).substr(20, (*i).length() - 1));
@@ -40,6 +45,7 @@ Lexer::Lexer(string fileName) {
                 substr = "";
                 break;
             }
+            // split lines of sleep
             if (substr == "Sleep") {
                 string withoutSpaces =
                         removeSpace((*i).substr(j, (*i).length() - 1));
@@ -47,11 +53,13 @@ Lexer::Lexer(string fileName) {
                 substr = "";
                 break;
             }
+            // slit lines of print
             if (substr == "Print") {
                 splitPrint((*i).substr(j, (*i).length() - 1), &tokens);
                 substr = "";
                 break;
             }
+            // split the condition of the while
             if (substr == "while") {
                 tokens.push_back("while");
                 string withoutSpaces =
@@ -60,6 +68,7 @@ Lexer::Lexer(string fileName) {
                 substr = "";
                 break;
             }
+            // split the condition of the if
             if (substr == "if") {
                 tokens.push_back("if");
                 string withoutSpaces =
@@ -68,11 +77,13 @@ Lexer::Lexer(string fileName) {
                 substr = "";
                 break;
             }
+            // if the line contains just '}', insert it to th vector
             if ((*i)[j] == '}') {
                 tokens.push_back("}");
                 substr = "";
                 break;
             }
+            // if we see " " or tab - ignore
             if (substr == " " || substr == "\t") {
                 substr = "";
             }
@@ -97,7 +108,7 @@ Lexer::Lexer(string fileName) {
 string Lexer::removeSpace(string str) {
     string dest = "";
     for (unsigned int i = 0; i < str.length(); ++i) {
-        // remove spaces.
+        // remove spaces
         if (str[i] != ' ') {
             dest += str[i];
         }
@@ -108,7 +119,7 @@ string Lexer::removeSpace(string str) {
 string Lexer::removeQuotatin(string str) {
     string dest = "";
     for (unsigned int i = 0; i < str.length(); ++i) {
-        // remove ", ) and (.
+        // remove ", ) and (
         if (str[i] != '"' && str[i] != ')' && str[i] != '(') {
             dest += str[i];
         }
@@ -121,6 +132,7 @@ void Lexer::splitOther(string s, vector<string> *tokens) {
     unsigned int index;
     string name;
     index = s.find("+=");
+    // var += expression
     if (index < s.length()) {
         tokens->push_back("obj");
         name = s.substr(0, index);
@@ -132,6 +144,7 @@ void Lexer::splitOther(string s, vector<string> *tokens) {
         return;
     }
     index = s.find("-=");
+    // var -= expression
     if (index < s.length()) {
         tokens->push_back("obj");
         name = s.substr(0, index);
@@ -142,6 +155,7 @@ void Lexer::splitOther(string s, vector<string> *tokens) {
                 (name + "-(" + s.substr(index + 2, s.length() - 1) + ")");
         return;
     }
+    // var *= expression
     index = s.find("*=");
     if (index < s.length()) {
         tokens->push_back("obj");
@@ -153,6 +167,7 @@ void Lexer::splitOther(string s, vector<string> *tokens) {
                 (name + "*(" + s.substr(index + 2, s.length() - 1) + ")");
         return;
     }
+    // var /= expression
     index = s.find("/=");
     if (index < s.length()) {
         tokens->push_back("obj");
@@ -164,6 +179,7 @@ void Lexer::splitOther(string s, vector<string> *tokens) {
                 (name + "/(" + s.substr(index + 2, s.length() - 1) + ")");
         return;
     }
+    // var = expression
     index = s.find("=");
     if (index < s.length()) {
         tokens->push_back("obj");
@@ -173,6 +189,7 @@ void Lexer::splitOther(string s, vector<string> *tokens) {
         return;
     }
     index = s.find("(");
+    // the line is: calling to function
     if (index < s.length()) {
         tokens->push_back("Func");
         // name
@@ -240,22 +257,24 @@ void Lexer::splitConnectControlClient(string s, vector<string> *tokens) {
 
 void Lexer::splitPrint(string s, vector<string> *tokens) {
     tokens->push_back("Print");
-    // the messege.
+    // the message
     tokens->push_back(s.substr(1, s.length() - 2));
 }
 
 void Lexer::splitSleep(string s, vector<string> *tokens) {
     tokens->push_back("Sleep");
-    // milliseconds for sleep.
+    // milliseconds for sleep
     tokens->push_back(removeQuotatin(s));
 }
 
 void Lexer::splitWhileOrIf(string s, vector<string> *tokens) {
+    // if the condition contains (), remove them
     if (s[0] == '(' && s[s.length() - 1] == ')') {
         s = s.substr(1, s.length() - 2);
     }
     s = removeSpace(s);
     unsigned int index;
+    // the condition is: expression == expression
     index = s.find("==");
     if (index < s.length()) {
         // expression 1
@@ -265,6 +284,7 @@ void Lexer::splitWhileOrIf(string s, vector<string> *tokens) {
         tokens->push_back(s.substr(index + 2, s.length() - index - 3));
         goto end;
     }
+    // the condition is: expression <= expression
     index = s.find("<=");
     if (index < s.length()) {
         // expression 1
@@ -274,6 +294,7 @@ void Lexer::splitWhileOrIf(string s, vector<string> *tokens) {
         tokens->push_back(s.substr(index + 2, s.length() - index - 3));
         goto end;
     }
+    // the condition is: expression >= expression
     index = s.find(">=");
     if (index < s.length()) {
         // expression 1
@@ -283,6 +304,7 @@ void Lexer::splitWhileOrIf(string s, vector<string> *tokens) {
         tokens->push_back(s.substr(index + 2, s.length() - index - 3));
         goto end;
     }
+    // the condition is: expression > expression
     index = s.find(">");
     if (index < s.length()) {
         // expression 1
@@ -292,6 +314,7 @@ void Lexer::splitWhileOrIf(string s, vector<string> *tokens) {
         tokens->push_back(s.substr(index + 1, s.length() - index - 2));
         goto end;
     }
+    // the condition is: expression < expression
     index = s.find("<");
     if (index < s.length()) {
         // expression 1
@@ -301,7 +324,8 @@ void Lexer::splitWhileOrIf(string s, vector<string> *tokens) {
         tokens->push_back(s.substr(index + 1, s.length() - index - 2));
         goto end;
     } else {
-        tokens->push_back(s.substr(0, s.length() - 2));
+        // the condition is only expression
+        tokens->push_back(s.substr(0, s.length() - 1));
     }
     end:
     tokens->push_back("{");
@@ -315,6 +339,7 @@ void Lexer::splitFunc(string s, vector<string> *tokens) {
     s = removeQuotatin(s);
     index = s.find(' ');
     string type = s.substr(0, index);
+    // name of the variable
     string name = s.substr(index + 1, s.length() - index - 2);
     tokens->push_back(nameFunc);
     tokens->push_back(type);
