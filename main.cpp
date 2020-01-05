@@ -13,5 +13,6 @@ int main(int argc, char *argv[]) {
     parser->interpret();
     InterpreterFlight::getInstance()->done();
     delete (InterpreterFlight::getInstance());
+    delete (parser);
     return 0;
 }

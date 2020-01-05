@@ -228,4 +228,8 @@ InterpreterFlight::~InterpreterFlight() {
         delete it3.second;
     }
 
+    for (auto it4 : functionMap) {
+        delete it4.second.second;
+    }
+
 }
