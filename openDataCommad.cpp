@@ -76,7 +76,7 @@ vector<float> OpenDataCommand::splitArgs(string details) {
   unsigned int index2 = details.find("\n", index + 1);
 
   if (index2 < details.length()) {
-    details = details.substr(index + 1, details.length() - index - 1);
+    details = details.substr(index + 1, index2 - index - 1);
   }
   string substr = "";
   //split the buffer and calculete the substring into float and put them in a vector structor.
