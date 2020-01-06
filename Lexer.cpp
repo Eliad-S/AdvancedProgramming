@@ -317,6 +317,16 @@ void Lexer::splitWhileOrIf(string s, vector<string> *tokens) {
         tokens->push_back(s.substr(index + 1, s.length() - index - 2));
         goto end;
     }
+    // the condition is: expression != expression
+    index = s.find("!=");
+    if (index < s.length()) {
+        // expression 1
+        tokens->push_back(s.substr(0, index));
+        tokens->push_back("!=");
+        // expression 2
+        tokens->push_back(s.substr(index + 2, s.length() - index - 3));
+        goto end;
+    }
     // the condition is: expression < expression
     index = s.find("<");
     if (index < s.length()) {
